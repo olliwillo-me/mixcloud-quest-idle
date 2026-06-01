@@ -557,17 +557,27 @@ document.getElementById('startQuestBtn').addEventListener('click', function() {
 
   // --- mouse ---
   var _mx = 0, _my = 0, _mpressed = false, _mdown = false;
+  function clientToVirtual(cx, cy) {
+    var rect = canvas.getBoundingClientRect();
+    var dpr = window.devicePixelRatio || 1;
+    var localX = (cx - rect.left) * dpr;
+    var localY = (cy - rect.top) * dpr;
+    return {
+      x: (localX - offsetX) / scale,
+      y: -(localY - offsetY) / scale
+    };
+  }
   canvas.addEventListener("mousemove", function (e) {
-    _mx = (e.clientX - offsetX) / scale;
-    _my = -(e.clientY - offsetY) / scale;
+    var v = clientToVirtual(e.clientX, e.clientY);
+    _mx = v.x; _my = v.y;
   });
   canvas.addEventListener("mousedown", function (e) { _mdown = true; });
   canvas.addEventListener("mouseup", function () { _mdown = false; });
   canvas.addEventListener("touchstart", function (e) {
     e.preventDefault();
     var t = e.touches[0];
-    _mx = (t.clientX - offsetX) / scale;
-    _my = -(t.clientY - offsetY) / scale;
+    var v = clientToVirtual(t.clientX, t.clientY);
+    _mx = v.x; _my = v.y;
     _mdown = true;
   }, { passive: false });
   canvas.addEventListener("touchend", function (e) {
@@ -577,8 +587,8 @@ document.getElementById('startQuestBtn').addEventListener('click', function() {
   canvas.addEventListener("touchmove", function (e) {
     e.preventDefault();
     var t = e.touches[0];
-    _mx = (t.clientX - offsetX) / scale;
-    _my = -(t.clientY - offsetY) / scale;
+    var v = clientToVirtual(t.clientX, t.clientY);
+    _mx = v.x; _my = v.y;
   }, { passive: false });
 
   window.mouse = {
