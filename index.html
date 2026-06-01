@@ -1473,7 +1473,7 @@ draw = function() {
     var s = slashFX[i];
     var sx = s.x - cam.x + shakeX;
     screen.setAlpha(s.life / 0.2);
-    var sz = s.crit ? 18 : 12;
+    var sz = s.crit ? 24 : 16;
     screen.drawSprite(sprites.slash, sx, s.y + shakeY, sz * hero.facing, sz);
     screen.setAlpha(1);
   }
@@ -1497,8 +1497,8 @@ draw = function() {
   for (var i = 0; i < coinPopups.length; i++) {
     var c = coinPopups[i];
     screen.setAlpha(Math.min(1, c.life * 2));
-    screen.drawSprite(sprites.gold_coin, c.x - cam.x + shakeX - 5, c.y + shakeY, 7, 7);
-    screen.drawText("+" + c.amount, c.x - cam.x + shakeX + 4, c.y + shakeY, 6, "#ffdd44");
+    screen.drawSprite(sprites.gold_coin, c.x - cam.x + shakeX - 7, c.y + shakeY, 10, 10);
+    screen.drawText("+" + c.amount, c.x - cam.x + shakeX + 6, c.y + shakeY, 9, "#ffdd44");
     screen.setAlpha(1);
   }
 
@@ -1508,8 +1508,8 @@ draw = function() {
 
   if (ui.notifyTimer > 0) {
     screen.setAlpha(Math.min(1, ui.notifyTimer));
-    screen.fillRect(0, HUD_Y - 18, screen.width + 20, 14, "rgba(0,0,0,0.8)");
-    screen.drawText(ui.notification, 0, HUD_Y - 18, 10, "#ffcc00");
+    screen.fillRect(0, HUD_Y - 22, screen.width + 20, 18, "rgba(0,0,0,0.8)");
+    screen.drawText(ui.notification, 0, HUD_Y - 22, 14, "#ffcc00");
     screen.setAlpha(1);
   }
 
@@ -1654,12 +1654,12 @@ drawTitleScreen = function() {
   var hw = screen.width / 2;
   drawFantasyBackground(hw, 0, 0, 0, false, true);
 
-  screen.drawText("MIXCLOUD", 0, 35, 22, "#ff6644");
-  screen.drawText("QUEST", 0, 10, 28, "#ffffff");
-  screen.drawText("Fight the horde. Earn gold. Upgrade your hero.", 0, -10, 9, "#888888");
+  screen.drawText("MIXCLOUD", 0, 40, 32, "#ff6644");
+  screen.drawText("QUEST", 0, 8, 40, "#ffffff");
+  screen.drawText("Fight the horde. Earn gold. Upgrade your hero.", 0, -15, 13, "#888888");
 
   screen.setAlpha(0.6 + Math.sin(time * 2) * 0.3);
-  screen.drawText("Click here to start", 0, -28, 12, "#aaaaaa");
+  screen.drawText("Click here to start", 0, -35, 16, "#aaaaaa");
   screen.setAlpha(1);
 };
 
@@ -1678,46 +1678,46 @@ drawHUD = function(hw) {
 
   // Play/Stop button — far left
   var playCol = music.playing ? "#ff4444" : "#44cc44";
-  var playX = -hw + 50;
-  screen.fillRound(playX, HUD_Y, 40, 18, 6, playCol);
-  screen.drawText(music.playing ? "STOP" : "PLAY", playX, HUD_Y, 11, "#ffffff");
+  var playX = -hw + 60;
+  screen.fillRound(playX, HUD_Y, 52, 22, 8, playCol);
+  screen.drawText(music.playing ? "STOP" : "PLAY", playX, HUD_Y, 15, "#ffffff");
 
   // BPM + beat indicator
-  screen.drawText(music.bpm + "bpm", -hw + 105, HUD_Y, 9, "#aaaaaa");
+  screen.drawText(music.bpm + "bpm", -hw + 125, HUD_Y, 12, "#aaaaaa");
   if (music.playing) {
-    var bs = 3 + music.beatFlash * 6;
-    screen.fillRound(-hw + 140, HUD_Y, bs, bs, bs / 2, "#ff4444");
+    var bs = 4 + music.beatFlash * 8;
+    screen.fillRound(-hw + 165, HUD_Y, bs, bs, bs / 2, "#ff4444");
   }
 
   // Hero HP bar — left-center
-  var hpBarX = -hw + 220;
+  var hpBarX = -hw + 260;
   var hpPct = hero.hp / hero.maxHp;
-  screen.drawText("HP", hpBarX - 30, HUD_Y, 8, "#ff6666");
-  screen.fillRect(hpBarX + 20, HUD_Y, 60, 6, "#333333");
-  screen.fillRect(hpBarX + 20 - 30 + hpPct * 30, HUD_Y, hpPct * 60, 6, hpColor(hpPct));
-  screen.drawText(Math.ceil(hero.hp) + "/" + hero.maxHp, hpBarX + 20, HUD_Y - 7, 6, "#cccccc");
+  screen.drawText("HP", hpBarX - 40, HUD_Y, 12, "#ff6666");
+  screen.fillRect(hpBarX + 20, HUD_Y, 80, 8, "#333333");
+  screen.fillRect(hpBarX + 20 - 40 + hpPct * 40, HUD_Y, hpPct * 80, 8, hpColor(hpPct));
+  screen.drawText(Math.ceil(hero.hp) + "/" + hero.maxHp, hpBarX + 20, HUD_Y - 9, 8, "#cccccc");
 
   // Wave — center
-  screen.drawText("Wave " + wave, 0, HUD_Y + 3, 12, "#ffffff");
+  screen.drawText("Wave " + wave, 0, HUD_Y + 4, 16, "#ffffff");
   if (music.playing) {
-    screen.drawText("Enemies incoming!", 0, HUD_Y - 7, 7, "#ff8888");
+    screen.drawText("Enemies incoming!", 0, HUD_Y - 8, 10, "#ff8888");
   } else {
-    screen.drawText("Rest - upgrade your hero", 0, HUD_Y - 7, 7, "#88ff88");
+    screen.drawText("Rest - upgrade your hero", 0, HUD_Y - 8, 10, "#88ff88");
   }
 
   // Kills + Gold + Income — right side
-  screen.drawText("Kills:" + totalKills, hw - 200, HUD_Y, 9, "#ff8888");
-  screen.drawText("Lv" + hero.level, hw - 145, HUD_Y, 9, "#88ccff");
-  screen.drawSprite(sprites.gold_coin, hw - 105, HUD_Y, 14, 14);
-  screen.drawText(gold, hw - 90, HUD_Y, 11, "#ffdd44");
+  screen.drawText("Kills:" + totalKills, hw - 240, HUD_Y, 12, "#ff8888");
+  screen.drawText("Lv" + hero.level, hw - 170, HUD_Y, 12, "#88ccff");
+  screen.drawSprite(sprites.gold_coin, hw - 120, HUD_Y, 18, 18);
+  screen.drawText(gold, hw - 102, HUD_Y, 14, "#ffdd44");
   var gpm = Math.round(town.incomeRate * Math.pow(2, town.expansion));
-  screen.drawText(gpm + "g/m", hw - 90, HUD_Y - 8, 5, "#88aa44");
+  screen.drawText(gpm + "g/m", hw - 102, HUD_Y - 10, 7, "#88aa44");
 
   // Shop button — far right
   if (!music.playing) {
-    var shopX = hw - 40;
-    screen.fillRound(shopX, HUD_Y, 36, 18, 6, "#ffaa00");
-    screen.drawText("SHOP", shopX, HUD_Y, 11, "#ffffff");
+    var shopX = hw - 50;
+    screen.fillRound(shopX, HUD_Y, 48, 22, 8, "#ffaa00");
+    screen.drawText("SHOP", shopX, HUD_Y, 15, "#ffffff");
   }
 };
 
@@ -1729,17 +1729,17 @@ drawShop = function(hw) {
   screen.fillRect(0, 0, screen.width + 20, 200, "#000000");
   screen.setAlpha(1);
 
-  screen.drawText("UPGRADE SHOP", 0, 75, 16, "#ffcc00");
-  screen.drawSprite(sprites.gold_coin, -40, 60, 12, 12);
-  screen.drawText(gold + " gold", -18, 60, 11, "#ffdd44");
+  screen.drawText("UPGRADE SHOP", 0, 78, 22, "#ffcc00");
+  screen.drawSprite(sprites.gold_coin, -50, 58, 16, 16);
+  screen.drawText(gold + " gold", -24, 58, 14, "#ffdd44");
 
   // Tab buttons
   var heroTabCol = shop.tab == "hero" ? "#ff6644" : "#444444";
   var townTabCol = shop.tab == "town" ? "#44aaff" : "#444444";
-  screen.fillRound(-70, 44, 60, 14, 5, heroTabCol);
-  screen.drawText("Hero", -70, 44, 10, "#ffffff");
-  screen.fillRound(70, 44, 60, 14, 5, townTabCol);
-  screen.drawText("Town", 70, 44, 10, "#ffffff");
+  screen.fillRound(-80, 42, 70, 18, 6, heroTabCol);
+  screen.drawText("Hero", -80, 42, 13, "#ffffff");
+  screen.fillRound(80, 42, 70, 18, 6, townTabCol);
+  screen.drawText("Town", 80, 42, 13, "#ffffff");
 
   var items = shop.tab == "hero" ? heroShopItems : townShopItems;
   var itemSpacing = Math.min(160, (screen.width - 100) / items.length);
@@ -1757,31 +1757,31 @@ drawShop = function(hw) {
 
     var frameAlpha = atMax ? 0.4 : (canAfford ? 1 : 0.6);
     screen.setAlpha(frameAlpha);
-    screen.drawSprite(sprites.frame, ix, iy, 100, 40);
+    screen.drawSprite(sprites.frame, ix, iy, 120, 48);
     screen.setAlpha(1);
 
-    screen.drawText(item.name, ix - 12, iy + 8, 9, atMax ? "#666666" : "#ffffff");
-    screen.drawText(item.desc, ix, iy - 2, 5, "#aaaaaa");
-    screen.drawText("Lv" + currentLevel + "/" + item.maxLevel, ix + 34, iy + 8, 7, "#ffdd44");
+    screen.drawText(item.name, ix - 14, iy + 10, 12, atMax ? "#666666" : "#ffffff");
+    screen.drawText(item.desc, ix, iy - 2, 7, "#aaaaaa");
+    screen.drawText("Lv" + currentLevel + "/" + item.maxLevel, ix + 40, iy + 10, 9, "#ffdd44");
 
     if (!atMax) {
-      screen.drawSprite(sprites.gold_coin, ix - 12, iy - 10, 8, 8);
-      screen.drawText(cost + "g", ix + 2, iy - 10, 8, canAfford ? "#ffffff" : "#888888");
+      screen.drawSprite(sprites.gold_coin, ix - 14, iy - 12, 10, 10);
+      screen.drawText(cost + "g", ix + 2, iy - 12, 10, canAfford ? "#ffffff" : "#888888");
     } else {
-      screen.drawText("MAX", ix, iy - 10, 7, "#444444");
+      screen.drawText("MAX", ix, iy - 12, 9, "#444444");
     }
   }
 
   // Stats summary
   if (shop.tab == "hero") {
-    screen.drawText("DMG:" + hero.damage + "  HP:" + hero.maxHp + "  SPD:" + hero.attackSpeed.toFixed(1) + "s", 0, -30, 7, "#aaaaaa");
+    screen.drawText("DMG:" + hero.damage + "  HP:" + hero.maxHp + "  SPD:" + hero.attackSpeed.toFixed(1) + "s", 0, -32, 10, "#aaaaaa");
   } else {
     var gpm = Math.round(town.incomeRate * Math.pow(2, town.expansion));
-    screen.drawText("Income:" + gpm + "g/m  Archers:" + town.archers + "  Catapults:" + town.catapults + "  Walls:Lv" + town.wallLevel, 0, -30, 7, "#aaaaaa");
+    screen.drawText("Income:" + gpm + "g/m  Archers:" + town.archers + "  Catapults:" + town.catapults + "  Walls:Lv" + town.wallLevel, 0, -32, 10, "#aaaaaa");
   }
 
-  screen.fillRound(0, -52, 50, 16, 6, "#ff5544");
-  screen.drawText("CLOSE", 0, -52, 11, "#ffffff");
+  screen.fillRound(0, -55, 60, 20, 8, "#ff5544");
+  screen.drawText("CLOSE", 0, -55, 14, "#ffffff");
 };
 
 getUpgradeLevel = function(item) {
@@ -1823,8 +1823,8 @@ drawHero = function(shakeX, shakeY) {
 
   // Hero sprite with attack animation
   var bob = Math.sin(time * 3) * 0.5;
-  var atkLean = hero.attackAnim > 0 ? hero.facing * 2 : 0;
-  var sz = 18;
+  var atkLean = hero.attackAnim > 0 ? hero.facing * 3 : 0;
+  var sz = 24;
   screen.drawSprite(sprites.hero, hx + atkLean, hy + bob, hero.facing * sz, sz);
 
   // XP bar under hero
@@ -1949,8 +1949,8 @@ drawEnemy = function(e, shakeX, shakeY) {
   var hw = screen.width / 2;
   var gx = e.x - cam.x + shakeX;
   var gy = e.y + shakeY;
-  var sz = e.boss ? 32 : 14;
-  var barW = e.boss ? 30 : 10;
+  var sz = e.boss ? 42 : 18;
+  var barW = e.boss ? 40 : 14;
   if (gx < -hw - 40 || gx > hw + 40) return;
 
   if (e.dead) {
@@ -1983,13 +1983,13 @@ drawEnemy = function(e, shakeX, shakeY) {
 
   // Boss label
   if (e.boss) {
-    screen.drawText("BOSS", gx, gy + sz / 2 + 6 + bob, 7, "#ff4444");
+    screen.drawText("BOSS", gx, gy + sz / 2 + 8 + bob, 10, "#ff4444");
   }
 
   // HP bar
   if (e.hp < e.maxHp) {
     var hpPct = e.hp / e.maxHp;
-    var barH = e.boss ? 3 : 1.5;
+    var barH = e.boss ? 4 : 2.5;
     screen.fillRect(gx, gy + sz / 2 + 2 + bob, barW, barH, "#333333");
     screen.fillRect(gx - barW / 2 + hpPct * barW / 2, gy + sz / 2 + 2 + bob, hpPct * barW, barH, e.boss ? "#ff4444" : hpColor(hpPct));
   }
@@ -2075,7 +2075,7 @@ handleGameInput = function() {
 
   if (shop.open) { handleShopInput(mx, my, hw); return; }
 
-  if (hitTest(mx, my, -hw + 50, HUD_Y, 40, 18)) {
+  if (hitTest(mx, my, -hw + 60, HUD_Y, 52, 22)) {
     music.playing = !music.playing;
     if (music.playing) {
       music.totalBeats = 0; music.beatTimer = 0; music.intensity = 1;
@@ -2088,18 +2088,18 @@ handleGameInput = function() {
     return;
   }
 
-  if (!music.playing && hitTest(mx, my, hw - 40, HUD_Y, 36, 18)) {
+  if (!music.playing && hitTest(mx, my, hw - 50, HUD_Y, 48, 22)) {
     shop.open = true;
     return;
   }
 };
 
 handleShopInput = function(mx, my, hw) {
-  if (hitTest(mx, my, 0, -52, 50, 16)) { shop.open = false; return; }
+  if (hitTest(mx, my, 0, -55, 60, 20)) { shop.open = false; return; }
 
   // Tab switching
-  if (hitTest(mx, my, -70, 44, 60, 14)) { shop.tab = "hero"; return; }
-  if (hitTest(mx, my,  70, 44, 60, 14)) { shop.tab = "town"; return; }
+  if (hitTest(mx, my, -80, 42, 70, 18)) { shop.tab = "hero"; return; }
+  if (hitTest(mx, my,  80, 42, 70, 18)) { shop.tab = "town"; return; }
 
   var items = shop.tab == "hero" ? heroShopItems : townShopItems;
   var itemSpacing = Math.min(160, (screen.width - 100) / items.length);
@@ -2110,7 +2110,7 @@ handleShopInput = function(mx, my, hw) {
     var ix = startX + i * itemSpacing;
     var iy = 8;
 
-    if (hitTest(mx, my, ix, iy, 100, 40)) {
+    if (hitTest(mx, my, ix, iy, 120, 48)) {
       var currentLevel = getUpgradeLevel(item);
       var atMax = currentLevel >= item.maxLevel;
       var cost = getUpgradeCost(item, currentLevel);
