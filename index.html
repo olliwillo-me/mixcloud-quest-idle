@@ -245,6 +245,7 @@ canvas {
   white-space: nowrap; display: flex; align-items: center; gap: 6px;
 }
 .mc-quest-btn:hover { transform: scale(1.05); box-shadow: 0 3px 14px rgba(123,104,238,0.6); }
+body.game-active .mc-quest-btn { background: linear-gradient(135deg, #666, #888); box-shadow: 0 2px 8px rgba(100,100,100,0.3); }
 .mc-quest-btn .sword-icon { font-size: 15px; }
 
 /* Game hidden by default */
@@ -446,17 +447,22 @@ body.game-active .mc-page { flex: 1; }
   wf.innerHTML = html;
 })();
 
-// Start Quest button
+// Quest toggle button
 document.getElementById('startQuestBtn').addEventListener('click', function() {
   var gameSection = document.querySelector('.mc-game-section');
-  gameSection.classList.add('active');
-  document.body.classList.add('game-active');
-  this.style.display = 'none';
-  // Trigger canvas resize after layout change
-  window.dispatchEvent(new Event('resize'));
-  // Scroll the show page to top
-  var page = document.querySelector('.mc-page');
-  if (page) page.scrollTop = 0;
+  var isActive = gameSection.classList.contains('active');
+  if (isActive) {
+    gameSection.classList.remove('active');
+    document.body.classList.remove('game-active');
+    this.innerHTML = '<span class="sword-icon">&#9876;</span> Start your quest';
+  } else {
+    gameSection.classList.add('active');
+    document.body.classList.add('game-active');
+    this.innerHTML = '<span class="sword-icon">&#9876;</span> Stop questing';
+    window.dispatchEvent(new Event('resize'));
+    var page = document.querySelector('.mc-page');
+    if (page) page.scrollTop = 0;
+  }
 });
 </script>
 <script>
