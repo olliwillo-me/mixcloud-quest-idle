@@ -629,176 +629,168 @@ document.getElementById('startQuestBtn').addEventListener('click', function() {
     return c2;
   }
 
+  function rr(c,x,y,w,h,r,col) {
+    c.fillStyle = col; c.beginPath();
+    c.moveTo(x+r,y); c.lineTo(x+w-r,y); c.quadraticCurveTo(x+w,y,x+w,y+r);
+    c.lineTo(x+w,y+h-r); c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+    c.lineTo(x+r,y+h); c.quadraticCurveTo(x,y+h,x,y+h-r);
+    c.lineTo(x,y+r); c.quadraticCurveTo(x,y,x+r,y); c.fill();
+  }
+  function circ(c,x,y,r,col) { c.fillStyle=col; c.beginPath(); c.arc(x,y,r,0,Math.PI*2); c.fill(); }
+  function grad(c,x,y,w,h,c1,c2) {
+    var g=c.createLinearGradient(x,y,x,y+h); g.addColorStop(0,c1); g.addColorStop(1,c2);
+    c.fillStyle=g; c.fillRect(x,y,w,h);
+  }
+
   function generateSprites() {
-    // ---- Goblin (32x32) — armored green menace ----
-    spriteImages["goblin"] = makeSprite(32, 32, function(c) {
-      c.fillStyle = "#1a3a1a";
-      c.fillRect(10, 5, 12, 22);
-      c.fillStyle = "#4a8a3a";
-      c.fillRect(11, 10, 10, 12);
-      c.fillStyle = "#5a9a4a";
-      c.fillRect(12, 3, 8, 8);
-      c.fillStyle = "#4a8a3a";
-      c.fillRect(9, 4, 3, 3);
-      c.fillRect(20, 4, 3, 3);
-      c.fillStyle = "#3a6a2a";
-      c.fillRect(10, 5, 1, 1);
-      c.fillRect(21, 5, 1, 1);
-      c.fillStyle = "#ff2200";
-      c.fillRect(13, 5, 2, 2);
-      c.fillRect(17, 5, 2, 2);
-      c.fillStyle = "#ffaa00";
-      c.fillRect(14, 5, 1, 1);
-      c.fillRect(18, 5, 1, 1);
-      c.fillStyle = "#2a4a1a";
-      c.fillRect(14, 9, 4, 2);
-      c.fillStyle = "#eeeedd";
-      c.fillRect(14, 9, 1, 2);
-      c.fillRect(17, 9, 1, 2);
-      c.fillStyle = "#5a3a1a";
-      c.fillRect(11, 12, 10, 5);
-      c.fillStyle = "#6a4a2a";
-      c.fillRect(12, 13, 8, 3);
-      c.fillStyle = "#8a6a3a";
-      c.fillRect(15, 12, 2, 5);
-      c.fillStyle = "#4a8a3a";
-      c.fillRect(8, 11, 3, 8);
-      c.fillRect(21, 11, 3, 8);
-      c.fillStyle = "#3a6a2a";
-      c.fillRect(8, 11, 1, 8);
-      c.fillStyle = "#5a4a2a";
-      c.fillRect(12, 22, 3, 6);
-      c.fillRect(17, 22, 3, 6);
-      c.fillStyle = "#3a2a1a";
-      c.fillRect(11, 27, 4, 3);
-      c.fillRect(17, 27, 4, 3);
-      c.fillStyle = "#666666";
-      c.fillRect(24, 7, 2, 10);
-      c.fillStyle = "#888888";
-      c.fillRect(24, 7, 1, 10);
-      c.fillStyle = "#aaaaaa";
-      c.fillRect(24, 7, 2, 1);
-      c.fillStyle = "#5a3a1a";
-      c.fillRect(23, 16, 4, 2);
-      c.fillStyle = "#8a6a3a";
-      c.fillRect(24, 18, 2, 3);
-      c.fillStyle = "#4a3a2a";
-      c.fillRect(4, 12, 5, 7);
-      c.fillStyle = "#666666";
-      c.fillRect(5, 13, 3, 5);
-      c.fillStyle = "#555555";
-      c.fillRect(6, 14, 1, 3);
+    // ---- Goblin (48x48) — detailed green menace ----
+    spriteImages["goblin"] = makeSprite(48, 48, function(c) {
+      // Body
+      grad(c, 14, 14, 20, 18, "#5a9a4a", "#3a7a2a");
+      rr(c, 14, 14, 20, 18, 4, ""); c.fillStyle="#4a8a3a"; c.fill();
+      // Head
+      circ(c, 24, 10, 9, "#5a9a4a");
+      circ(c, 24, 9, 8, "#6aaa5a");
+      // Ears
+      circ(c, 14, 9, 4, "#5a9a4a"); circ(c, 34, 9, 4, "#5a9a4a");
+      circ(c, 14, 9, 3, "#6aaa5a"); circ(c, 34, 9, 3, "#6aaa5a");
+      // Eyes
+      circ(c, 20, 9, 2.5, "#ffeecc"); circ(c, 28, 9, 2.5, "#ffeecc");
+      circ(c, 21, 9, 1.5, "#cc2200"); circ(c, 29, 9, 1.5, "#cc2200");
+      circ(c, 21, 9, 0.7, "#220000"); circ(c, 29, 9, 0.7, "#220000");
+      // Mouth / fangs
+      rr(c, 20, 14, 8, 3, 1, "#2a4a1a");
+      c.fillStyle = "#eeeedd"; c.fillRect(21, 14, 2, 2); c.fillRect(26, 14, 2, 2);
+      // Armor chestplate
+      rr(c, 15, 16, 18, 14, 3, "#5a3a1a");
+      rr(c, 16, 17, 16, 12, 2, "#6a4a2a");
+      c.fillStyle = "#8a6a3a"; c.fillRect(22, 16, 4, 14);
+      // Arms
+      rr(c, 8, 16, 7, 14, 3, "#4a8a3a");
+      rr(c, 33, 16, 7, 14, 3, "#4a8a3a");
+      // Legs
+      rr(c, 16, 32, 6, 10, 2, "#5a4a2a");
+      rr(c, 26, 32, 6, 10, 2, "#5a4a2a");
+      // Boots
+      rr(c, 15, 40, 8, 5, 2, "#3a2a1a");
+      rr(c, 25, 40, 8, 5, 2, "#3a2a1a");
+      // Weapon (club)
+      c.save(); c.translate(36, 14); c.rotate(0.3);
+      rr(c, 0, -2, 3, 16, 1, "#5a3a1a");
+      circ(c, 1.5, -3, 4, "#666666"); circ(c, 1.5, -3, 3, "#555555");
+      c.restore();
+      // Shield
+      rr(c, 4, 18, 8, 10, 3, "#4a3a2a");
+      rr(c, 5, 19, 6, 8, 2, "#666666");
+      circ(c, 8, 23, 2, "#555555");
     });
 
-    // ---- Castle Gate (32x48) — stone fortification with battlements ----
-    spriteImages["castle_gate"] = makeSprite(32, 48, function(c) {
-      c.fillStyle = "#5a5a6a";
-      c.fillRect(0, 8, 32, 40);
-      c.fillStyle = "#4a4a5a";
-      for (var y = 8; y < 48; y += 4) {
-        for (var x = 0; x < 32; x += 8) {
-          c.fillRect(x + (Math.floor(y/4)%2)*4, y, 7, 3);
+    // ---- Castle Gate (48x64) — stone fortification with battlements ----
+    spriteImages["castle_gate"] = makeSprite(48, 64, function(c) {
+      // Main wall body with gradient
+      grad(c, 0, 10, 48, 54, "#6a6a7a", "#4a4a5a");
+      // Stone brick pattern
+      c.globalAlpha = 0.3;
+      for (var y = 10; y < 64; y += 6) {
+        for (var x = 0; x < 48; x += 12) {
+          rr(c, x + (Math.floor(y/6)%2)*6, y, 11, 5, 1, "#5a5a6a");
         }
       }
-      c.fillStyle = "#3a3a4a";
-      for (var y = 8; y < 48; y += 4) c.fillRect(0, y, 32, 1);
-      c.fillStyle = "#6a6a7a";
-      for (var x = 0; x < 32; x += 7) {
-        c.fillRect(x, 4, 4, 8);
-        c.fillStyle = "#7a7a8a";
-        c.fillRect(x, 4, 4, 2);
-        c.fillStyle = "#6a6a7a";
+      c.globalAlpha = 1;
+      // Mortar lines
+      c.strokeStyle = "#3a3a4a"; c.lineWidth = 0.5;
+      for (var y = 10; y < 64; y += 6) { c.beginPath(); c.moveTo(0,y); c.lineTo(48,y); c.stroke(); }
+      // Battlements
+      for (var x = 0; x < 48; x += 10) {
+        rr(c, x, 4, 6, 10, 2, "#6a6a7a");
+        grad(c, x, 4, 6, 4, "#8a8a9a", "#6a6a7a");
       }
+      // Gate arch
       c.fillStyle = "#3a3a4a";
-      c.fillRect(9, 24, 14, 24);
-      c.fillRect(11, 22, 10, 4);
-      c.fillRect(12, 20, 8, 4);
+      c.beginPath(); c.arc(24, 36, 10, Math.PI, 0); c.lineTo(34, 64); c.lineTo(14, 64); c.fill();
       c.fillStyle = "#222233";
-      c.fillRect(10, 26, 12, 22);
-      c.fillRect(12, 24, 8, 2);
-      c.fillStyle = "#444455";
-      for (var x = 12; x < 22; x += 3) c.fillRect(x, 26, 1, 20);
-      c.fillStyle = "#3a3a4a";
-      c.fillRect(0, 42, 32, 6);
-      c.fillStyle = "#2a3a2a";
-      c.fillRect(2, 40, 2, 1);
-      c.fillRect(24, 39, 2, 1);
-      c.fillRect(28, 36, 1, 3);
+      c.beginPath(); c.arc(24, 36, 8, Math.PI, 0); c.lineTo(32, 64); c.lineTo(16, 64); c.fill();
+      // Gate bars
+      c.strokeStyle = "#444455"; c.lineWidth = 1;
+      for (var x = 18; x < 32; x += 3) { c.beginPath(); c.moveTo(x, 30); c.lineTo(x, 64); c.stroke(); }
+      // Base stones
+      rr(c, 0, 58, 48, 6, 1, "#3a3a4a");
     });
 
-    // ---- Mystic Tower (40x64) — gothic tower with red roof ----
-    spriteImages["mystic_tower"] = makeSprite(40, 64, function(c) {
-      c.fillStyle = "#5a5a6a";
-      c.fillRect(6, 20, 28, 44);
-      c.fillStyle = "#4a4a5a";
-      for (var y = 20; y < 64; y += 5) {
-        for (var x = 6; x < 34; x += 7) {
-          c.fillRect(x + (Math.floor(y/5)%2)*3, y, 6, 4);
-        }
+    // ---- Mystic Tower (56x80) — gothic tower with red roof ----
+    spriteImages["mystic_tower"] = makeSprite(56, 80, function(c) {
+      // Side turrets
+      rr(c, 2, 38, 10, 42, 3, "#5a5a6a"); grad(c, 2, 38, 10, 42, "#6a6a7a", "#4a4a5a");
+      rr(c, 44, 38, 10, 42, 3, "#5a5a6a"); grad(c, 44, 38, 10, 42, "#6a6a7a", "#4a4a5a");
+      rr(c, 2, 35, 10, 5, 2, "#7a7a8a"); rr(c, 44, 35, 10, 5, 2, "#7a7a8a");
+      // Main body
+      rr(c, 10, 26, 36, 54, 3, "#5a5a6a");
+      grad(c, 10, 26, 36, 54, "#6a6a7a", "#4a4a5a");
+      // Brick pattern
+      c.globalAlpha = 0.15;
+      for (var y = 26; y < 80; y += 6) {
+        for (var x = 10; x < 46; x += 9) rr(c, x+(Math.floor(y/6)%2)*4, y, 8, 5, 1, "#8a8a9a");
       }
-      c.fillStyle = "#6a6a7a";
-      c.fillRect(4, 18, 32, 4);
-      for (var x = 4; x < 36; x += 6) c.fillRect(x, 14, 3, 6);
-      c.fillStyle = "#7a3a2a";
-      for (var y = 0; y < 16; y++) {
-        var w = Math.floor(y * 1.4);
-        c.fillRect(20 - w, 2 + y, w * 2, 1);
+      c.globalAlpha = 1;
+      // Parapet
+      rr(c, 8, 24, 40, 5, 2, "#7a7a8a");
+      for (var x = 8; x < 48; x += 8) rr(c, x, 20, 5, 7, 1, "#6a6a7a");
+      // Roof — conical
+      c.fillStyle = "#8a3a2a";
+      c.beginPath(); c.moveTo(28, 2); c.lineTo(8, 22); c.lineTo(48, 22); c.fill();
+      grad(c, 8, 2, 40, 20, "#9a4a3a", "#7a2a1a");
+      c.beginPath(); c.moveTo(28, 2); c.lineTo(10, 22); c.lineTo(46, 22); c.fill();
+      // Roof tiles
+      c.globalAlpha = 0.2;
+      for (var y = 5; y < 22; y += 4) {
+        var w2 = (y - 2) * 1.1;
+        for (var x2 = 28 - w2; x2 < 28 + w2; x2 += 5) rr(c, x2, y, 4, 3, 1, "#aa5a4a");
       }
-      c.fillStyle = "#8a4a3a";
-      for (var y = 2; y < 18; y += 3) {
-        var w = Math.floor((y-2)*1.4);
-        for (var x = 20-w; x < 20+w; x += 4) c.fillRect(x, 2+y, 3, 2);
+      c.globalAlpha = 1;
+      // Spire
+      c.fillStyle = "#ccaa44"; c.fillRect(27, 0, 2, 4);
+      // Windows — arched
+      for (var wx2 = 0; wx2 < 2; wx2++) {
+        var winX = 16 + wx2 * 18;
+        c.fillStyle = "#222233";
+        c.beginPath(); c.arc(winX, 33, 4, Math.PI, 0); c.lineTo(winX+4, 42); c.lineTo(winX-4, 42); c.fill();
+        c.fillStyle = "#ffcc44";
+        c.beginPath(); c.arc(winX, 33, 3, Math.PI, 0); c.lineTo(winX+3, 41); c.lineTo(winX-3, 41); c.fill();
+        c.fillStyle = "#3a3a4a"; c.fillRect(winX-0.5, 31, 1, 11);
       }
-      c.fillStyle = "#9a5a4a";
-      c.fillRect(19, 2, 2, 14);
-      c.fillStyle = "#ccaa44";
-      c.fillRect(19, 0, 2, 3);
-      c.fillStyle = "#222233";
-      c.fillRect(12, 26, 5, 7);
-      c.fillRect(23, 26, 5, 7);
-      c.fillRect(16, 40, 8, 10);
-      c.fillStyle = "#ffcc44";
-      c.fillRect(13, 27, 3, 5);
-      c.fillRect(24, 27, 3, 5);
-      c.fillStyle = "#ffaa22";
-      c.fillRect(17, 41, 6, 8);
-      c.fillStyle = "#3a3a4a";
-      c.fillRect(14, 27, 1, 5);
-      c.fillRect(25, 27, 1, 5);
-      c.fillRect(20, 41, 1, 8);
-      c.fillRect(17, 45, 6, 1);
+      // Main door
       c.fillStyle = "#3a2a1a";
-      c.fillRect(16, 52, 8, 12);
+      c.beginPath(); c.arc(28, 62, 7, Math.PI, 0); c.lineTo(35, 80); c.lineTo(21, 80); c.fill();
       c.fillStyle = "#2a1a0a";
-      c.fillRect(17, 53, 6, 11);
-      c.fillStyle = "#4a4a5a";
-      c.fillRect(17, 50, 6, 3);
-      c.fillRect(18, 49, 4, 2);
-      c.fillStyle = "#5a5a6a";
-      c.fillRect(2, 30, 6, 34);
-      c.fillRect(32, 30, 6, 34);
-      c.fillStyle = "#6a6a7a";
-      c.fillRect(2, 28, 6, 3);
-      c.fillRect(32, 28, 6, 3);
+      c.beginPath(); c.arc(28, 62, 5, Math.PI, 0); c.lineTo(33, 80); c.lineTo(23, 80); c.fill();
+      // Door handle
+      circ(c, 30, 70, 1, "#ccaa44");
     });
 
-    // ---- Campfire / Cauldron (14x14) ----
-    spriteImages["campfire"] = makeSprite(14, 14, function(c) {
-      c.fillStyle = "#333333";
-      c.fillRect(3, 6, 8, 6);
-      c.fillStyle = "#444444";
-      c.fillRect(4, 5, 6, 2);
-      c.fillStyle = "#4a6a2a";
-      c.fillRect(4, 7, 6, 2);
-      c.fillStyle = "#ff4400";
-      c.fillRect(4, 11, 6, 3);
-      c.fillStyle = "#ff8800";
-      c.fillRect(5, 10, 4, 3);
+    // ---- Campfire / Cauldron (22x22) ----
+    spriteImages["campfire"] = makeSprite(22, 22, function(c) {
+      // Logs
+      rr(c, 3, 16, 16, 4, 2, "#4a2a10");
+      rr(c, 5, 18, 12, 3, 1, "#3a1a0a");
+      // Fire glow
+      var fg = c.createRadialGradient(11, 12, 1, 11, 14, 8);
+      fg.addColorStop(0, "rgba(255,220,80,0.4)"); fg.addColorStop(1, "rgba(255,100,0,0)");
+      c.fillStyle = fg; c.fillRect(0, 4, 22, 18);
+      // Flames
+      c.fillStyle = "#cc3300";
+      c.beginPath(); c.moveTo(4, 16); c.quadraticCurveTo(3, 8, 7, 6);
+      c.quadraticCurveTo(9, 10, 11, 4); c.quadraticCurveTo(13, 10, 15, 6);
+      c.quadraticCurveTo(19, 8, 18, 16); c.fill();
+      c.fillStyle = "#ff6600";
+      c.beginPath(); c.moveTo(6, 16); c.quadraticCurveTo(6, 10, 9, 8);
+      c.quadraticCurveTo(10, 12, 11, 6); c.quadraticCurveTo(12, 12, 13, 8);
+      c.quadraticCurveTo(16, 10, 16, 16); c.fill();
       c.fillStyle = "#ffcc44";
-      c.fillRect(6, 10, 2, 2);
-      c.fillStyle = "#333333";
-      c.fillRect(3, 12, 1, 2);
-      c.fillRect(10, 12, 1, 2);
+      c.beginPath(); c.moveTo(8, 16); c.quadraticCurveTo(9, 12, 11, 9);
+      c.quadraticCurveTo(13, 12, 14, 16); c.fill();
+      c.fillStyle = "#ffee88";
+      c.beginPath(); c.moveTo(9, 16); c.quadraticCurveTo(10, 13, 11, 11);
+      c.quadraticCurveTo(12, 13, 13, 16); c.fill();
     });
 
     // ---- Fire Pit (20x14) ----
@@ -871,17 +863,17 @@ document.getElementById('startQuestBtn').addEventListener('click', function() {
       c.fillRect(0, 3, 1, 2);
     });
 
-    // ---- Gold Coin (12x12) ----
-    spriteImages["gold_coin"] = makeSprite(12, 12, function(c) {
-      c.fillStyle = "#aa8822";
-      c.beginPath(); c.arc(6, 6, 5, 0, Math.PI*2); c.fill();
-      c.fillStyle = "#ddaa22";
-      c.beginPath(); c.arc(6, 6, 4, 0, Math.PI*2); c.fill();
-      c.fillStyle = "#ffdd44";
-      c.beginPath(); c.arc(5, 5, 2.5, 0, Math.PI*2); c.fill();
-      c.fillStyle = "#aa8822";
-      c.fillRect(5, 3, 2, 5);
-      c.fillRect(4, 5, 4, 1);
+    // ---- Gold Coin (20x20) ----
+    spriteImages["gold_coin"] = makeSprite(20, 20, function(c) {
+      circ(c, 10, 10, 9, "#886611");
+      circ(c, 10, 10, 8, "#aa8822");
+      var g = c.createRadialGradient(8, 8, 1, 10, 10, 8);
+      g.addColorStop(0, "#ffee66"); g.addColorStop(1, "#cc9922");
+      c.fillStyle = g; c.beginPath(); c.arc(10, 10, 7, 0, Math.PI*2); c.fill();
+      // Dollar sign
+      c.strokeStyle = "#886611"; c.lineWidth = 1.5;
+      c.beginPath(); c.arc(10, 10, 3, -0.5, Math.PI+0.5); c.stroke();
+      c.fillStyle = "#886611"; c.fillRect(9.5, 5, 1, 10);
     });
 
     // ---- Treasure Chest (16x14) ----
@@ -992,88 +984,109 @@ document.getElementById('startQuestBtn').addEventListener('click', function() {
 
     // ---- Frame / Shop Card (64x26) — ornate border ----
     // ---- Hero (32x32) — armored knight warrior ----
-    spriteImages["hero"] = makeSprite(32, 32, function(c) {
-      // Boots
-      c.fillStyle = "#4a3020"; c.fillRect(10, 26, 5, 4); c.fillRect(17, 26, 5, 4);
-      // Legs — chainmail
-      c.fillStyle = "#6a6a7a"; c.fillRect(11, 20, 4, 7); c.fillRect(17, 20, 4, 7);
-      // Body — plate armor
-      c.fillStyle = "#8899aa"; c.fillRect(9, 10, 14, 11);
-      c.fillStyle = "#99aabb"; c.fillRect(10, 11, 12, 9);
-      // Belt
-      c.fillStyle = "#6a5030"; c.fillRect(9, 19, 14, 2);
-      c.fillStyle = "#ccaa44"; c.fillRect(14, 19, 4, 2);
-      // Arms
-      c.fillStyle = "#7788aa"; c.fillRect(6, 11, 4, 8); c.fillRect(22, 11, 4, 8);
-      // Gauntlets
-      c.fillStyle = "#667788"; c.fillRect(6, 18, 4, 3); c.fillRect(22, 18, 4, 3);
-      // Sword (right hand)
-      c.fillStyle = "#ccccdd"; c.fillRect(24, 6, 2, 14);
-      c.fillStyle = "#eeeeff"; c.fillRect(24, 4, 2, 4);
-      c.fillStyle = "#8a6a30"; c.fillRect(22, 18, 6, 2);
-      // Shield (left hand)
-      c.fillStyle = "#3a5a8a"; c.fillRect(2, 12, 6, 8);
-      c.fillStyle = "#4a6a9a"; c.fillRect(3, 13, 4, 6);
-      c.fillStyle = "#ccaa44"; c.fillRect(4, 15, 2, 2);
-      // Head
-      c.fillStyle = "#ddbbaa"; c.fillRect(12, 4, 8, 7);
-      // Helmet
-      c.fillStyle = "#8899aa"; c.fillRect(11, 2, 10, 5);
-      c.fillStyle = "#99aabb"; c.fillRect(12, 1, 8, 3);
-      // Helmet visor
-      c.fillStyle = "#334455"; c.fillRect(13, 5, 6, 2);
-      // Eyes through visor
-      c.fillStyle = "#eeeeff"; c.fillRect(14, 5, 2, 1); c.fillRect(18, 5, 2, 1);
-      // Plume
-      c.fillStyle = "#cc3333"; c.fillRect(14, 0, 4, 2);
-      c.fillStyle = "#ee4444"; c.fillRect(15, 0, 2, 1);
+    spriteImages["hero"] = makeSprite(48, 48, function(c) {
       // Cape
-      c.fillStyle = "#882222"; c.fillRect(12, 10, 8, 2);
+      rr(c, 16, 16, 16, 20, 3, "#882233");
+      grad(c, 16, 16, 16, 20, "#993344", "#661122");
+      // Boots
+      rr(c, 14, 39, 8, 6, 2, "#4a3020"); rr(c, 26, 39, 8, 6, 2, "#4a3020");
+      rr(c, 14, 40, 8, 5, 2, "#5a4030"); rr(c, 26, 40, 8, 5, 2, "#5a4030");
+      // Legs — chainmail
+      rr(c, 16, 30, 6, 11, 2, "#6a6a7a"); rr(c, 26, 30, 6, 11, 2, "#6a6a7a");
+      grad(c, 16, 30, 6, 11, "#7a7a8a", "#5a5a6a"); grad(c, 26, 30, 6, 11, "#7a7a8a", "#5a5a6a");
+      // Body — plate armor
+      rr(c, 12, 15, 24, 17, 4, "#7a8a9a");
+      grad(c, 13, 16, 22, 15, "#99aabb", "#6a7a8a");
+      // Armor detail lines
+      c.strokeStyle = "#5a6a7a"; c.lineWidth = 0.5;
+      c.beginPath(); c.moveTo(24, 16); c.lineTo(24, 30); c.stroke();
+      // Belt
+      rr(c, 12, 29, 24, 3, 1, "#6a5030");
+      circ(c, 24, 30, 2, "#ccaa44");
+      // Arms
+      rr(c, 6, 16, 7, 14, 3, "#7a8a9a"); rr(c, 35, 16, 7, 14, 3, "#7a8a9a");
+      grad(c, 6, 16, 7, 14, "#8a9aaa", "#6a7a8a"); grad(c, 35, 16, 7, 14, "#8a9aaa", "#6a7a8a");
+      // Gauntlets
+      rr(c, 5, 28, 8, 5, 2, "#667788"); rr(c, 35, 28, 8, 5, 2, "#667788");
+      // Shield (left hand)
+      rr(c, 1, 18, 10, 14, 4, "#3a5a8a");
+      rr(c, 2, 19, 8, 12, 3, "#4a6a9a");
+      circ(c, 6, 25, 3, "#5a7aaa");
+      circ(c, 6, 25, 2, "#ccaa44");
+      // Head
+      circ(c, 24, 9, 8, "#ddbbaa");
+      // Helmet
+      rr(c, 15, 1, 18, 12, 5, "#8899aa");
+      grad(c, 16, 2, 16, 10, "#aabbcc", "#7788aa");
+      // Visor
+      rr(c, 17, 8, 14, 4, 2, "#334455");
+      // Eyes
+      circ(c, 21, 9, 1.2, "#ddeeff"); circ(c, 28, 9, 1.2, "#ddeeff");
+      // Plume
+      rr(c, 20, 0, 8, 3, 1, "#cc3333");
+      rr(c, 22, 0, 4, 2, 1, "#ee5555");
+      // Nose guard
+      c.fillStyle = "#7a8a9a"; c.fillRect(23, 6, 2, 6);
     });
 
-    // ---- House (24x24) — small medieval cottage ----
-    spriteImages["house"] = makeSprite(24, 24, function(c) {
-      // Wall
-      c.fillStyle = "#8a7a60"; c.fillRect(4, 10, 16, 14);
-      c.fillStyle = "#9a8a70"; c.fillRect(5, 11, 14, 12);
+    // ---- House (36x36) — medieval cottage ----
+    spriteImages["house"] = makeSprite(36, 36, function(c) {
+      // Walls
+      rr(c, 5, 15, 26, 21, 2, "#8a7a60");
+      grad(c, 5, 15, 26, 21, "#9a8a70", "#7a6a50");
       // Roof
-      c.fillStyle = "#6a3020"; c.fillRect(2, 7, 20, 4);
-      c.fillStyle = "#7a4030";
-      c.beginPath(); c.moveTo(0, 11); c.lineTo(12, 3); c.lineTo(24, 11); c.fill();
+      c.fillStyle = "#7a3a20";
+      c.beginPath(); c.moveTo(0, 16); c.lineTo(18, 3); c.lineTo(36, 16); c.fill();
+      grad(c, 0, 3, 36, 13, "#8a4a30", "#6a2a10");
+      c.beginPath(); c.moveTo(1, 16); c.lineTo(18, 4); c.lineTo(35, 16); c.fill();
+      // Chimney
+      rr(c, 26, 4, 4, 12, 1, "#5a5a6a");
       // Door
-      c.fillStyle = "#5a4030"; c.fillRect(10, 16, 5, 8);
-      c.fillStyle = "#ccaa44"; c.fillRect(13, 19, 1, 1);
-      // Window
-      c.fillStyle = "#4a6a8a"; c.fillRect(6, 14, 3, 3);
-      c.fillStyle = "#6a8aaa"; c.fillRect(7, 14, 1, 2);
-      // Window right
-      c.fillStyle = "#4a6a8a"; c.fillRect(16, 14, 3, 3);
-      c.fillStyle = "#6a8aaa"; c.fillRect(17, 14, 1, 2);
+      c.fillStyle = "#3a2a1a";
+      c.beginPath(); c.arc(18, 28, 4, Math.PI, 0); c.lineTo(22, 36); c.lineTo(14, 36); c.fill();
+      c.fillStyle = "#2a1a0a";
+      c.beginPath(); c.arc(18, 28, 3, Math.PI, 0); c.lineTo(21, 36); c.lineTo(15, 36); c.fill();
+      circ(c, 20, 31, 0.8, "#ccaa44");
+      // Windows
+      rr(c, 7, 20, 5, 5, 1, "#4a6a8a"); rr(c, 8, 21, 3, 3, 0, "#6a9abb");
+      c.fillStyle = "#3a5a7a"; c.fillRect(9, 20, 1, 5); c.fillRect(7, 22, 5, 1);
+      rr(c, 24, 20, 5, 5, 1, "#4a6a8a"); rr(c, 25, 21, 3, 3, 0, "#6a9abb");
+      c.fillStyle = "#3a5a7a"; c.fillRect(26, 20, 1, 5); c.fillRect(24, 22, 5, 1);
     });
 
-    // ---- Slash effect (16x16) ----
-    spriteImages["slash"] = makeSprite(16, 16, function(c) {
-      c.strokeStyle = "#ffffff"; c.lineWidth = 2;
-      c.beginPath(); c.arc(8, 8, 6, -0.8, 0.8); c.stroke();
-      c.strokeStyle = "#ffcc44"; c.lineWidth = 1;
-      c.beginPath(); c.arc(8, 8, 5, -0.6, 0.6); c.stroke();
+    // ---- Slash effect (24x24) ----
+    spriteImages["slash"] = makeSprite(24, 24, function(c) {
+      c.strokeStyle = "#ffffff"; c.lineWidth = 3; c.lineCap = "round";
+      c.beginPath(); c.arc(12, 12, 9, -0.8, 0.8); c.stroke();
+      c.strokeStyle = "#ffdd66"; c.lineWidth = 2;
+      c.beginPath(); c.arc(12, 12, 8, -0.6, 0.6); c.stroke();
+      c.strokeStyle = "rgba(255,200,80,0.4)"; c.lineWidth = 4;
+      c.beginPath(); c.arc(12, 12, 7, -0.4, 0.4); c.stroke();
     });
 
-    spriteImages["frame"] = makeSprite(64, 26, function(c, w, h) {
-      c.fillStyle = "rgba(20,20,35,0.95)";
-      c.fillRect(0, 0, w, h);
-      c.strokeStyle = "#6a5a3a";
-      c.lineWidth = 2;
-      c.strokeRect(1, 1, w-2, h-2);
-      c.strokeStyle = "#4a3a2a";
-      c.lineWidth = 1;
-      c.strokeRect(3, 3, w-6, h-6);
-      c.fillStyle = "#8a6a3a";
-      c.fillRect(0, 0, 4, 4); c.fillRect(w-4, 0, 4, 4);
-      c.fillRect(0, h-4, 4, 4); c.fillRect(w-4, h-4, 4, 4);
-      c.fillStyle = "#6a5a3a";
-      c.fillRect(1, 1, 2, 2); c.fillRect(w-3, 1, 2, 2);
-      c.fillRect(1, h-3, 2, 2); c.fillRect(w-3, h-3, 2, 2);
+    spriteImages["frame"] = makeSprite(96, 40, function(c, w, h) {
+      // Rounded card background
+      var g = c.createLinearGradient(0, 0, 0, h);
+      g.addColorStop(0, "rgba(30,30,50,0.95)"); g.addColorStop(1, "rgba(15,15,30,0.95)");
+      c.fillStyle = g;
+      c.beginPath();
+      var r2 = 6;
+      c.moveTo(r2,0); c.lineTo(w-r2,0); c.quadraticCurveTo(w,0,w,r2);
+      c.lineTo(w,h-r2); c.quadraticCurveTo(w,h,w-r2,h);
+      c.lineTo(r2,h); c.quadraticCurveTo(0,h,0,h-r2);
+      c.lineTo(0,r2); c.quadraticCurveTo(0,0,r2,0); c.fill();
+      // Border
+      c.strokeStyle = "#6a5a3a"; c.lineWidth = 2;
+      c.beginPath();
+      c.moveTo(r2,1); c.lineTo(w-r2,1); c.quadraticCurveTo(w-1,1,w-1,r2);
+      c.lineTo(w-1,h-r2); c.quadraticCurveTo(w-1,h-1,w-r2,h-1);
+      c.lineTo(r2,h-1); c.quadraticCurveTo(1,h-1,1,h-r2);
+      c.lineTo(1,r2); c.quadraticCurveTo(1,1,r2,1); c.stroke();
+      // Corner jewels
+      circ(c, 5, 5, 3, "#8a6a3a"); circ(c, 5, 5, 2, "#ccaa55");
+      circ(c, w-5, 5, 3, "#8a6a3a"); circ(c, w-5, 5, 2, "#ccaa55");
+      circ(c, 5, h-5, 3, "#8a6a3a"); circ(c, 5, h-5, 2, "#ccaa55");
+      circ(c, w-5, h-5, 3, "#8a6a3a"); circ(c, w-5, h-5, 2, "#ccaa55");
     });
   }
 
