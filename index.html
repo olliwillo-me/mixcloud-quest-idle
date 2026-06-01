@@ -1,0 +1,2099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mixcloud Quest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #fff; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: #333; }
+body { display: flex; flex-direction: column; }
+.mc-page { flex: 1; overflow-x: hidden; overflow-y: auto; min-height: 0; }
+
+/* ── Navbar ── */
+.mc-nav {
+  background: #fff; height: 56px; display: flex; align-items: center;
+  padding: 0 24px; border-bottom: 1px solid #e8e8e8;
+  position: sticky; top: 0; z-index: 100;
+}
+.mc-logo { color: #111; font-weight: 800; font-size: 16px; letter-spacing: 1.5px; margin-right: 16px; white-space: nowrap; }
+.mc-nav-search {
+  background: #f0f0f0; border: none; border-radius: 4px; padding: 8px 12px 8px 34px;
+  color: #666; font-size: 13px; width: 200px; outline: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='6' cy='6' r='5' stroke='%23999' fill='none' stroke-width='1.5'/%3E%3Cline x1='9.5' y1='9.5' x2='13' y2='13' stroke='%23999' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: 12px center;
+}
+.mc-nav-right { display: flex; gap: 24px; margin-left: auto; align-items: center; }
+.mc-nav-right a { color: #333; text-decoration: none; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 3px; }
+.mc-nav-right a:hover { color: #000; }
+.mc-nav-right .caret { font-size: 10px; color: #999; }
+.mc-nav-create {
+  background: #fff; border: 1.5px solid #ddd; border-radius: 20px;
+  color: #333; padding: 6px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+  display: flex; align-items: center; gap: 4px;
+}
+.mc-nav-create:hover { border-color: #aaa; }
+.mc-nav-icons { display: flex; gap: 16px; align-items: center; margin-left: 8px; }
+.mc-nav-icons .icon-circle {
+  width: 28px; height: 28px; border-radius: 50%; background: #f0f0f0;
+  display: flex; align-items: center; justify-content: center; font-size: 13px; color: #666; cursor: pointer; position: relative;
+}
+.mc-nav-icons .icon-circle .notif-dot {
+  position: absolute; top: -1px; right: -1px; width: 14px; height: 14px; border-radius: 50%;
+  background: #e04040; color: #fff; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+}
+.mc-nav-icons .avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(135deg, #f0c040, #e06080); cursor: pointer;
+}
+.mc-nav-icons .hamburger { font-size: 18px; color: #666; cursor: pointer; }
+
+/* ── Show Header (dark region) ── */
+.mc-header-bg { background: #111; }
+.mc-show-header {
+  max-width: 1100px; margin: 0 auto;
+  padding: 32px 40px 28px; display: flex; gap: 20px; align-items: flex-start;
+}
+.mc-play-btn {
+  width: 72px; height: 72px; border-radius: 50%; background: rgba(255,255,255,0.08);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer;
+  border: 2px solid rgba(255,255,255,0.25); transition: background 0.2s; margin-top: 4px;
+}
+.mc-play-btn:hover { background: rgba(255,255,255,0.15); }
+.mc-play-btn svg { margin-left: 3px; }
+.mc-show-info { flex: 1; min-width: 0; padding-top: 4px; }
+.mc-show-title { color: #fff; font-size: 22px; font-weight: 700; margin-bottom: 8px; line-height: 1.3; }
+.mc-show-meta { color: #999; font-size: 13px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.mc-show-meta span { white-space: nowrap; }
+.mc-show-meta .sep { color: #555; }
+.mc-show-meta .stat-muted { color: #666; font-size: 12px; }
+.mc-show-art {
+  width: 160px; height: 160px; border-radius: 8px; background: #222;
+  flex-shrink: 0; overflow: hidden;
+}
+.mc-show-art img { width: 100%; height: 100%; object-fit: cover; }
+.mc-show-art .art-ghost {
+  width: 100%; height: 100%; background: #1a1a1a;
+  display: flex; align-items: center; justify-content: center;
+}
+.mc-show-art .art-ghost .ghost-inner {
+  width: 100px; height: 100px; border-radius: 50% 50% 0 0;
+  background: radial-gradient(circle at 50% 45%, #e0e0e0, #bbb);
+  position: relative; display: flex; align-items: center; justify-content: center;
+}
+.mc-show-art .art-ghost .ghost-inner::after {
+  content: ''; position: absolute; bottom: -16px; left: 10px; right: 10px; height: 20px;
+  background: radial-gradient(circle at 50% 0%, #ccc, transparent); border-radius: 0 0 50% 50%;
+}
+
+/* ── Action Buttons ── */
+.mc-actions-row { background: #111; }
+.mc-actions {
+  max-width: 1100px; margin: 0 auto; padding: 0 40px 20px;
+  display: flex; gap: 8px; align-items: center;
+}
+.mc-action-btn {
+  background: transparent; border: 1.5px solid #444; border-radius: 20px;
+  color: #ccc; padding: 7px 18px; font-size: 13px; font-weight: 500;
+  cursor: pointer; display: flex; align-items: center; gap: 7px; transition: all 0.2s;
+}
+.mc-action-btn:hover { border-color: #888; color: #fff; }
+.mc-action-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+.mc-action-btn.mc-more { padding: 7px 10px; }
+
+/* ── Waveform ── */
+.mc-waveform-section { background: #111; }
+.mc-waveform {
+  max-width: 1100px; margin: 0 auto; padding: 0 40px 16px;
+  position: relative;
+}
+.mc-waveform-bar {
+  height: 56px; background: transparent; overflow: hidden; position: relative;
+}
+.mc-waveform-visual {
+  width: 100%; height: 100%; display: flex; align-items: flex-end; gap: 1px;
+}
+.mc-waveform-visual .bar {
+  flex: 1; background: #333; border-radius: 1px 1px 0 0; min-width: 1px;
+}
+.mc-waveform-visual .bar.played { background: #9b8ce8; }
+.mc-waveform-time {
+  position: absolute; right: 0; bottom: 2px; color: #666;
+  font-size: 11px; font-family: monospace;
+}
+
+/* ── Comment Box ── */
+.mc-comment-section { background: #111; padding-bottom: 20px; }
+.mc-comment {
+  max-width: 1100px; margin: 0 auto; padding: 0 40px;
+  display: flex; align-items: center; gap: 10px;
+}
+.mc-comment-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg, #e06080, #f0c040); flex-shrink: 0;
+}
+.mc-comment-input {
+  flex: 1; background: #222; border: 1px solid #333; border-radius: 20px;
+  padding: 8px 16px; color: #888; font-size: 13px; outline: none;
+}
+.mc-comment-input::placeholder { color: #666; }
+.mc-comment-icons { display: flex; gap: 8px; }
+.mc-comment-icons span { color: #666; font-size: 16px; cursor: pointer; }
+
+/* ── White Content Area ── */
+.mc-content { background: #fff; }
+.mc-content-inner {
+  max-width: 1100px; margin: 0 auto; padding: 20px 40px;
+  display: flex; gap: 40px;
+}
+.mc-content-left { flex: 1; min-width: 0; }
+.mc-content-right { width: 260px; flex-shrink: 0; }
+
+/* Creator card */
+.mc-creator {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 0; border-bottom: 1px solid #eee;
+}
+.mc-creator-avatar {
+  width: 48px; height: 48px; border-radius: 50%; background: #e8e8e8;
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.mc-creator-avatar .ghost-icon { font-size: 28px; }
+.mc-creator-info { flex: 1; }
+.mc-creator-name { font-weight: 600; font-size: 15px; color: #111; }
+.mc-creator-followers { font-size: 12px; color: #999; }
+.mc-following-btn {
+  background: #fff; border: 1.5px solid #ddd; border-radius: 4px;
+  padding: 6px 14px; font-size: 12px; font-weight: 600; color: #333;
+  cursor: pointer; display: flex; align-items: center; gap: 5px;
+}
+.mc-following-btn:hover { border-color: #aaa; }
+.mc-following-btn .bell { font-size: 13px; }
+.mc-following-btn .caret { font-size: 9px; color: #999; }
+
+/* Tags on white bg */
+.mc-tags-white { padding: 16px 0; display: flex; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid #eee; }
+.mc-tag-w {
+  background: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 14px;
+  color: #555; padding: 5px 14px; font-size: 12px; cursor: pointer;
+}
+.mc-tag-w:hover { background: #eee; color: #333; }
+
+/* Description */
+.mc-description { padding: 14px 0; color: #666; font-size: 13px; border-bottom: 1px solid #eee; }
+
+/* Sidebar - Listeners / Favorited */
+.mc-sidebar-section { margin-bottom: 20px; }
+.mc-sidebar-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 10px;
+}
+.mc-sidebar-header h4 { font-size: 13px; font-weight: 600; color: #333; }
+.mc-sidebar-header a { font-size: 12px; color: #999; text-decoration: none; }
+.mc-sidebar-header a:hover { color: #666; }
+.mc-sidebar-avatars { display: flex; gap: 6px; flex-wrap: wrap; }
+.mc-sidebar-avatars .listener {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: #e8e8e8; overflow: hidden;
+}
+.mc-sidebar-avatars .listener.c1 { background: linear-gradient(135deg, #6a4c93, #4a3060); }
+.mc-sidebar-avatars .listener.c2 { background: linear-gradient(135deg, #2d6a4f, #40916c); }
+.mc-sidebar-avatars .listener.c3 { background: linear-gradient(135deg, #e07050, #c04030); }
+.mc-sidebar-avatars .listener.c4 { background: linear-gradient(135deg, #f0c040, #e06080); }
+.mc-sidebar-avatars .listener.c5 { background: linear-gradient(135deg, #4090d0, #2060a0); }
+.mc-sidebar-avatars .listener.c6 { background: linear-gradient(135deg, #50b080, #30a060); }
+
+/* ── Player Bar (between page and game) ── */
+.mc-player {
+  background: #1a1a1a; height: 56px; display: flex; align-items: center;
+  padding: 0 20px; flex-shrink: 0; position: relative;
+  border-top: 1px solid #333;
+}
+
+/* ── Game Section (fixed bottom 15%, hidden until activated) ── */
+.mc-game-wrap {
+  flex: 1; min-height: 0; position: relative;
+}
+canvas {
+  display: block; width: 100%; height: 100%;
+  image-rendering: pixelated;
+}
+.mc-player-play {
+  width: 32px; height: 32px; border-radius: 50%; background: transparent;
+  border: 2px solid #fff; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; margin-right: 12px; flex-shrink: 0;
+}
+.mc-player-play svg { margin-left: 2px; }
+.mc-player-art {
+  width: 36px; height: 36px; border-radius: 4px; background: #333;
+  margin-right: 12px; flex-shrink: 0;
+}
+.mc-player-info { flex: 1; min-width: 0; }
+.mc-player-title { color: #fff; font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mc-player-artist { color: #888; font-size: 11px; }
+.mc-player-time { color: #888; font-size: 12px; font-family: monospace; margin: 0 16px; white-space: nowrap; }
+.mc-player-icons { display: flex; gap: 16px; align-items: center; }
+.mc-player-icons span { color: #888; font-size: 18px; cursor: pointer; }
+.mc-player-icons span:hover { color: #fff; }
+/* ── Quest CTA Button ── */
+.mc-quest-btn {
+  background: linear-gradient(135deg, #7b68ee, #e040fb); border: none; border-radius: 22px;
+  color: #fff; padding: 7px 20px; font-size: 13px; font-weight: 700; cursor: pointer;
+  letter-spacing: 0.5px; transition: all 0.3s; box-shadow: 0 2px 8px rgba(123,104,238,0.4);
+  white-space: nowrap; display: flex; align-items: center; gap: 6px;
+}
+.mc-quest-btn:hover { transform: scale(1.05); box-shadow: 0 3px 14px rgba(123,104,238,0.6); }
+.mc-quest-btn .sword-icon { font-size: 15px; }
+
+/* Game hidden by default */
+.mc-game-section { display: none; }
+.mc-game-section.active {
+  display: flex; height: 15vh; flex-shrink: 0; background: #111; position: relative;
+  flex-direction: column;
+}
+
+/* When game is active, shrink page to make room */
+body.game-active .mc-page { flex: 1; }
+
+.mc-player-progress {
+  position: absolute; top: 0; left: 0; height: 3px; background: #7b68ee;
+  width: 0.4%; border-radius: 0 2px 2px 0;
+}
+</style>
+</head>
+<body>
+
+<!-- ── Scrollable Show Page ── -->
+<div class="mc-page">
+
+<!-- ── Navbar ── -->
+<nav class="mc-nav">
+  <div class="mc-logo">M&#8212;XCLOUD</div>
+  <input class="mc-nav-search" placeholder="Search" disabled>
+  <div class="mc-nav-right">
+    <button class="mc-quest-btn" id="startQuestBtn"><span class="sword-icon">&#9876;</span> Start your quest</button>
+    <a href="#">Listen <span class="caret">&#9662;</span></a>
+    <a href="#">Creator tools <span class="caret">&#9662;</span></a>
+    <a href="#">Plans <span class="caret">&#9662;</span></a>
+    <button class="mc-nav-create">&#8853; Create</button>
+    <div class="mc-nav-icons">
+      <div class="icon-circle">&#128276;<div class="notif-dot">6</div></div>
+      <div class="icon-circle">&#9993;</div>
+      <div class="avatar"></div>
+      <span class="hamburger">&#9776;</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Dark Show Header ── -->
+<div class="mc-header-bg">
+  <div class="mc-show-header">
+    <div class="mc-play-btn">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><polygon points="6,3 20,12 6,21"/></svg>
+    </div>
+    <div class="mc-show-info">
+      <div class="mc-show-title">Ghostmic &#8211; Ghostie's Late Night LoFi #1</div>
+      <div class="mc-show-meta">
+        <span>&#9654; 10,159 mins played</span>
+        <span class="sep">&bull;</span>
+        <span>&#9829; 15 favorites</span>
+        <span class="sep">&bull;</span>
+        <span>&#8634; 1 repost</span>
+        <span class="sep">&bull;</span>
+        <span>3 years ago</span>
+        <span class="stat-muted">&nbsp;&nbsp;[0.75]&nbsp;&bull;&nbsp;321&nbsp;&bull;&nbsp;10k</span>
+      </div>
+    </div>
+    <div class="mc-show-art">
+      <div class="art-ghost"><div class="ghost-inner"></div></div>
+    </div>
+  </div>
+
+  <!-- ── Action Buttons ── -->
+  <div class="mc-actions-row">
+    <div class="mc-actions">
+      <button class="mc-action-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Favorite
+      </button>
+      <button class="mc-action-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/></svg>
+        Repost
+      </button>
+      <button class="mc-action-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+        Share
+      </button>
+      <button class="mc-action-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Add to
+      </button>
+      <button class="mc-action-btn mc-more">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Waveform ── -->
+  <div class="mc-waveform-section">
+    <div class="mc-waveform">
+      <div class="mc-waveform-bar" id="waveformBar"></div>
+      <span class="mc-waveform-time">52:50</span>
+    </div>
+  </div>
+
+  <!-- ── Comment ── -->
+  <div class="mc-comment-section">
+    <div class="mc-comment">
+      <div class="mc-comment-avatar"></div>
+      <input class="mc-comment-input" placeholder="Write a comment" disabled>
+      <div class="mc-comment-icons">
+        <span>&#9786;</span>
+        <span>&#9654;</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── White Content Area ── -->
+<div class="mc-content">
+  <div class="mc-content-inner">
+    <div class="mc-content-left">
+      <!-- Creator -->
+      <div class="mc-creator">
+        <div class="mc-creator-avatar"><span class="ghost-icon">&#128123;</span></div>
+        <div class="mc-creator-info">
+          <div class="mc-creator-name">Ghost Project</div>
+          <div class="mc-creator-followers">713 followers</div>
+        </div>
+        <button class="mc-following-btn"><span class="bell">&#128276;</span> Following <span class="caret">&#9662;</span></button>
+      </div>
+
+      <!-- Tags -->
+      <div class="mc-tags-white">
+        <span class="mc-tag-w">chillout</span>
+        <span class="mc-tag-w">chillhop</span>
+        <span class="mc-tag-w">independent music</span>
+        <span class="mc-tag-w">ambient</span>
+        <span class="mc-tag-w">ambient music</span>
+      </div>
+
+      <!-- Description -->
+      <div class="mc-description">Enjoy!</div>
+    </div>
+    <div class="mc-content-right">
+      <div class="mc-sidebar-section">
+        <div class="mc-sidebar-header"><h4>Listeners (128)</h4><a href="#">See all</a></div>
+        <div class="mc-sidebar-avatars">
+          <div class="listener c1"></div><div class="listener c2"></div><div class="listener c3"></div>
+          <div class="listener c4"></div><div class="listener c5"></div><div class="listener c6"></div>
+        </div>
+      </div>
+      <div class="mc-sidebar-section">
+        <div class="mc-sidebar-header"><h4>Favorited by (15)</h4><a href="#">See all</a></div>
+        <div class="mc-sidebar-avatars">
+          <div class="listener c3"></div><div class="listener c1"></div><div class="listener c5"></div>
+          <div class="listener c2"></div><div class="listener c4"></div><div class="listener c6"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /.mc-page -->
+
+<!-- ── Player Bar ── -->
+<div class="mc-player">
+  <div class="mc-player-progress"></div>
+  <div class="mc-player-play">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><polygon points="6,3 20,12 6,21"/></svg>
+  </div>
+  <div class="mc-player-art"></div>
+  <div class="mc-player-info">
+    <div class="mc-player-title">Ghostmic Special &#8211; 2024 End Of Year Challenge (30+ Songs in 3 minutes)</div>
+    <div class="mc-player-artist">Ghost Project</div>
+  </div>
+  <div class="mc-player-time">00:12 / 03:31</div>
+  <div class="mc-player-icons">
+    <span>&#9829;</span>
+    <span>&#8682;</span>
+    <span>&#128172;</span>
+    <span>&#128266;</span>
+    <span>&#9776;</span>
+  </div>
+</div>
+
+<!-- ── Game Section ── -->
+<div class="mc-game-section">
+  <div class="mc-game-wrap">
+    <canvas id="game"></canvas>
+  </div>
+</div>
+
+<script>
+// Generate waveform bars
+(function() {
+  var wf = document.getElementById('waveformBar');
+  var html = '<div class="mc-waveform-visual">';
+  for (var i = 0; i < 250; i++) {
+    var h = 10 + Math.random() * 50;
+    var played = i < 6 ? ' played' : '';
+    html += '<div class="bar' + played + '" style="height:' + h + '%"></div>';
+  }
+  html += '</div>';
+  wf.innerHTML = html;
+})();
+
+// Start Quest button
+document.getElementById('startQuestBtn').addEventListener('click', function() {
+  var gameSection = document.querySelector('.mc-game-section');
+  gameSection.classList.add('active');
+  document.body.classList.add('game-active');
+  this.style.display = 'none';
+  // Trigger canvas resize after layout change
+  window.dispatchEvent(new Event('resize'));
+  // Scroll the show page to top
+  var page = document.querySelector('.mc-page');
+  if (page) page.scrollTop = 0;
+});
+</script>
+<script>
+// =============================================
+// MicroStudio API Shim — maps MicroStudio's
+// screen / mouse / keyboard onto HTML5 Canvas
+// =============================================
+(function () {
+  var canvas = document.getElementById("game");
+  var ctx = canvas.getContext("2d");
+
+  var VIRTUAL_H = 200;
+  var virtualW = 200;
+  var scale = 1;
+  var offsetX = 0, offsetY = 0;
+
+  function resize() {
+    var rect = canvas.getBoundingClientRect();
+    var dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(rect.width * dpr);
+    canvas.height = Math.round(rect.height * dpr);
+    scale = canvas.height / VIRTUAL_H;
+    virtualW = canvas.width / scale;
+    offsetX = canvas.width / 2;
+    offsetY = canvas.height / 2;
+    screen.width = virtualW;
+    screen.height = VIRTUAL_H;
+  }
+  window.addEventListener("resize", resize);
+
+  // --- screen object ---
+  window.screen = {
+    width: 200,
+    height: VIRTUAL_H,
+    clear: function (c) {
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = c || "#000";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    },
+    setAlpha: function (a) { ctx.globalAlpha = Math.max(0, Math.min(1, a)); },
+    setFont: function () {},
+    fillRect: function (x, y, w, h, c) {
+      ctx.fillStyle = c || "#fff";
+      ctx.fillRect(offsetX + (x - w / 2) * scale, offsetY - (y + h / 2) * scale, w * scale, h * scale);
+    },
+    fillRound: function (x, y, w, h, r, c) {
+      ctx.fillStyle = c || "#fff";
+      var rx = offsetX + (x - w / 2) * scale;
+      var ry = offsetY - (y + h / 2) * scale;
+      var rw = w * scale;
+      var rh = h * scale;
+      var rr = r * scale;
+      ctx.beginPath();
+      ctx.moveTo(rx + rr, ry);
+      ctx.arcTo(rx + rw, ry, rx + rw, ry + rh, rr);
+      ctx.arcTo(rx + rw, ry + rh, rx, ry + rh, rr);
+      ctx.arcTo(rx, ry + rh, rx, ry, rr);
+      ctx.arcTo(rx, ry, rx + rw, ry, rr);
+      ctx.closePath();
+      ctx.fill();
+    },
+    drawText: function (txt, x, y, sz, c) {
+      ctx.fillStyle = c || "#fff";
+      ctx.font = Math.round(sz * scale) + "px monospace";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(String(txt), offsetX + x * scale, offsetY - y * scale);
+    },
+    fillPoly: function (points, c) {
+      if (!points || points.length < 3) return;
+      ctx.fillStyle = c || "#fff";
+      ctx.beginPath();
+      ctx.moveTo(offsetX + points[0][0] * scale, offsetY - points[0][1] * scale);
+      for (var i = 1; i < points.length; i++) {
+        ctx.lineTo(offsetX + points[i][0] * scale, offsetY - points[i][1] * scale);
+      }
+      ctx.closePath();
+      ctx.fill();
+    },
+    drawSprite: function (name, x, y, w, h) {
+      var img = spriteImages[name];
+      if (!img) return;
+      var dw = Math.abs(w) * scale;
+      var dh = Math.abs(h) * scale;
+      var dx = offsetX + x * scale - dw / 2;
+      var dy = offsetY - y * scale - dh / 2;
+      ctx.save();
+      if (w < 0) {
+        ctx.translate(dx + dw, dy);
+        ctx.scale(-1, 1);
+        ctx.drawImage(img, 0, 0, dw, dh);
+      } else {
+        ctx.drawImage(img, dx, dy, dw, dh);
+      }
+      ctx.restore();
+    }
+  };
+
+  // --- mouse ---
+  var _mx = 0, _my = 0, _mpressed = false, _mdown = false;
+  canvas.addEventListener("mousemove", function (e) {
+    _mx = (e.clientX - offsetX) / scale;
+    _my = -(e.clientY - offsetY) / scale;
+  });
+  canvas.addEventListener("mousedown", function (e) { _mdown = true; });
+  canvas.addEventListener("mouseup", function () { _mdown = false; });
+  canvas.addEventListener("touchstart", function (e) {
+    e.preventDefault();
+    var t = e.touches[0];
+    _mx = (t.clientX - offsetX) / scale;
+    _my = -(t.clientY - offsetY) / scale;
+    _mdown = true;
+  }, { passive: false });
+  canvas.addEventListener("touchend", function (e) {
+    e.preventDefault();
+    _mdown = false;
+  }, { passive: false });
+  canvas.addEventListener("touchmove", function (e) {
+    e.preventDefault();
+    var t = e.touches[0];
+    _mx = (t.clientX - offsetX) / scale;
+    _my = -(t.clientY - offsetY) / scale;
+  }, { passive: false });
+
+  window.mouse = {
+    get x() { return _mx; },
+    get y() { return _my; },
+    get press() {
+      var v = _mpressed;
+      return v;
+    }
+  };
+
+  // --- keyboard ---
+  var _keys = {};
+  window.addEventListener("keydown", function (e) { _keys[e.key] = true; _keys[e.code] = true; });
+  window.addEventListener("keyup", function (e) { _keys[e.key] = false; _keys[e.code] = false; });
+
+  window.keyboard = {
+    get LEFT()  { return !!_keys["ArrowLeft"]; },
+    get RIGHT() { return !!_keys["ArrowRight"]; },
+    get A()     { return !!_keys["a"] || !!_keys["A"]; },
+    get D()     { return !!_keys["d"] || !!_keys["D"]; }
+  };
+
+  // --- Procedural sprites ---
+  var spriteImages = {};
+
+  function makeSprite(w, h, draw) {
+    var c2 = document.createElement("canvas");
+    c2.width = w; c2.height = h;
+    var cx = c2.getContext("2d");
+    draw(cx, w, h);
+    return c2;
+  }
+
+  function generateSprites() {
+    // ---- Goblin (32x32) — armored green menace ----
+    spriteImages["goblin"] = makeSprite(32, 32, function(c) {
+      c.fillStyle = "#1a3a1a";
+      c.fillRect(10, 5, 12, 22);
+      c.fillStyle = "#4a8a3a";
+      c.fillRect(11, 10, 10, 12);
+      c.fillStyle = "#5a9a4a";
+      c.fillRect(12, 3, 8, 8);
+      c.fillStyle = "#4a8a3a";
+      c.fillRect(9, 4, 3, 3);
+      c.fillRect(20, 4, 3, 3);
+      c.fillStyle = "#3a6a2a";
+      c.fillRect(10, 5, 1, 1);
+      c.fillRect(21, 5, 1, 1);
+      c.fillStyle = "#ff2200";
+      c.fillRect(13, 5, 2, 2);
+      c.fillRect(17, 5, 2, 2);
+      c.fillStyle = "#ffaa00";
+      c.fillRect(14, 5, 1, 1);
+      c.fillRect(18, 5, 1, 1);
+      c.fillStyle = "#2a4a1a";
+      c.fillRect(14, 9, 4, 2);
+      c.fillStyle = "#eeeedd";
+      c.fillRect(14, 9, 1, 2);
+      c.fillRect(17, 9, 1, 2);
+      c.fillStyle = "#5a3a1a";
+      c.fillRect(11, 12, 10, 5);
+      c.fillStyle = "#6a4a2a";
+      c.fillRect(12, 13, 8, 3);
+      c.fillStyle = "#8a6a3a";
+      c.fillRect(15, 12, 2, 5);
+      c.fillStyle = "#4a8a3a";
+      c.fillRect(8, 11, 3, 8);
+      c.fillRect(21, 11, 3, 8);
+      c.fillStyle = "#3a6a2a";
+      c.fillRect(8, 11, 1, 8);
+      c.fillStyle = "#5a4a2a";
+      c.fillRect(12, 22, 3, 6);
+      c.fillRect(17, 22, 3, 6);
+      c.fillStyle = "#3a2a1a";
+      c.fillRect(11, 27, 4, 3);
+      c.fillRect(17, 27, 4, 3);
+      c.fillStyle = "#666666";
+      c.fillRect(24, 7, 2, 10);
+      c.fillStyle = "#888888";
+      c.fillRect(24, 7, 1, 10);
+      c.fillStyle = "#aaaaaa";
+      c.fillRect(24, 7, 2, 1);
+      c.fillStyle = "#5a3a1a";
+      c.fillRect(23, 16, 4, 2);
+      c.fillStyle = "#8a6a3a";
+      c.fillRect(24, 18, 2, 3);
+      c.fillStyle = "#4a3a2a";
+      c.fillRect(4, 12, 5, 7);
+      c.fillStyle = "#666666";
+      c.fillRect(5, 13, 3, 5);
+      c.fillStyle = "#555555";
+      c.fillRect(6, 14, 1, 3);
+    });
+
+    // ---- Castle Gate (32x48) — stone fortification with battlements ----
+    spriteImages["castle_gate"] = makeSprite(32, 48, function(c) {
+      c.fillStyle = "#5a5a6a";
+      c.fillRect(0, 8, 32, 40);
+      c.fillStyle = "#4a4a5a";
+      for (var y = 8; y < 48; y += 4) {
+        for (var x = 0; x < 32; x += 8) {
+          c.fillRect(x + (Math.floor(y/4)%2)*4, y, 7, 3);
+        }
+      }
+      c.fillStyle = "#3a3a4a";
+      for (var y = 8; y < 48; y += 4) c.fillRect(0, y, 32, 1);
+      c.fillStyle = "#6a6a7a";
+      for (var x = 0; x < 32; x += 7) {
+        c.fillRect(x, 4, 4, 8);
+        c.fillStyle = "#7a7a8a";
+        c.fillRect(x, 4, 4, 2);
+        c.fillStyle = "#6a6a7a";
+      }
+      c.fillStyle = "#3a3a4a";
+      c.fillRect(9, 24, 14, 24);
+      c.fillRect(11, 22, 10, 4);
+      c.fillRect(12, 20, 8, 4);
+      c.fillStyle = "#222233";
+      c.fillRect(10, 26, 12, 22);
+      c.fillRect(12, 24, 8, 2);
+      c.fillStyle = "#444455";
+      for (var x = 12; x < 22; x += 3) c.fillRect(x, 26, 1, 20);
+      c.fillStyle = "#3a3a4a";
+      c.fillRect(0, 42, 32, 6);
+      c.fillStyle = "#2a3a2a";
+      c.fillRect(2, 40, 2, 1);
+      c.fillRect(24, 39, 2, 1);
+      c.fillRect(28, 36, 1, 3);
+    });
+
+    // ---- Mystic Tower (40x64) — gothic tower with red roof ----
+    spriteImages["mystic_tower"] = makeSprite(40, 64, function(c) {
+      c.fillStyle = "#5a5a6a";
+      c.fillRect(6, 20, 28, 44);
+      c.fillStyle = "#4a4a5a";
+      for (var y = 20; y < 64; y += 5) {
+        for (var x = 6; x < 34; x += 7) {
+          c.fillRect(x + (Math.floor(y/5)%2)*3, y, 6, 4);
+        }
+      }
+      c.fillStyle = "#6a6a7a";
+      c.fillRect(4, 18, 32, 4);
+      for (var x = 4; x < 36; x += 6) c.fillRect(x, 14, 3, 6);
+      c.fillStyle = "#7a3a2a";
+      for (var y = 0; y < 16; y++) {
+        var w = Math.floor(y * 1.4);
+        c.fillRect(20 - w, 2 + y, w * 2, 1);
+      }
+      c.fillStyle = "#8a4a3a";
+      for (var y = 2; y < 18; y += 3) {
+        var w = Math.floor((y-2)*1.4);
+        for (var x = 20-w; x < 20+w; x += 4) c.fillRect(x, 2+y, 3, 2);
+      }
+      c.fillStyle = "#9a5a4a";
+      c.fillRect(19, 2, 2, 14);
+      c.fillStyle = "#ccaa44";
+      c.fillRect(19, 0, 2, 3);
+      c.fillStyle = "#222233";
+      c.fillRect(12, 26, 5, 7);
+      c.fillRect(23, 26, 5, 7);
+      c.fillRect(16, 40, 8, 10);
+      c.fillStyle = "#ffcc44";
+      c.fillRect(13, 27, 3, 5);
+      c.fillRect(24, 27, 3, 5);
+      c.fillStyle = "#ffaa22";
+      c.fillRect(17, 41, 6, 8);
+      c.fillStyle = "#3a3a4a";
+      c.fillRect(14, 27, 1, 5);
+      c.fillRect(25, 27, 1, 5);
+      c.fillRect(20, 41, 1, 8);
+      c.fillRect(17, 45, 6, 1);
+      c.fillStyle = "#3a2a1a";
+      c.fillRect(16, 52, 8, 12);
+      c.fillStyle = "#2a1a0a";
+      c.fillRect(17, 53, 6, 11);
+      c.fillStyle = "#4a4a5a";
+      c.fillRect(17, 50, 6, 3);
+      c.fillRect(18, 49, 4, 2);
+      c.fillStyle = "#5a5a6a";
+      c.fillRect(2, 30, 6, 34);
+      c.fillRect(32, 30, 6, 34);
+      c.fillStyle = "#6a6a7a";
+      c.fillRect(2, 28, 6, 3);
+      c.fillRect(32, 28, 6, 3);
+    });
+
+    // ---- Campfire / Cauldron (14x14) ----
+    spriteImages["campfire"] = makeSprite(14, 14, function(c) {
+      c.fillStyle = "#333333";
+      c.fillRect(3, 6, 8, 6);
+      c.fillStyle = "#444444";
+      c.fillRect(4, 5, 6, 2);
+      c.fillStyle = "#4a6a2a";
+      c.fillRect(4, 7, 6, 2);
+      c.fillStyle = "#ff4400";
+      c.fillRect(4, 11, 6, 3);
+      c.fillStyle = "#ff8800";
+      c.fillRect(5, 10, 4, 3);
+      c.fillStyle = "#ffcc44";
+      c.fillRect(6, 10, 2, 2);
+      c.fillStyle = "#333333";
+      c.fillRect(3, 12, 1, 2);
+      c.fillRect(10, 12, 1, 2);
+    });
+
+    // ---- Fire Pit (20x14) ----
+    spriteImages["fire_pit"] = makeSprite(20, 14, function(c) {
+      c.fillStyle = "#3a2a1a";
+      c.fillRect(2, 10, 16, 4);
+      c.fillStyle = "#cc2200";
+      c.fillRect(3, 3, 14, 8);
+      c.fillStyle = "#ff4400";
+      c.fillRect(5, 1, 10, 8);
+      c.fillStyle = "#ff8800";
+      c.fillRect(7, 0, 6, 6);
+      c.fillStyle = "#ffcc44";
+      c.fillRect(8, 1, 4, 3);
+      c.fillStyle = "#ffaa22";
+      c.fillRect(4, 5, 1, 1);
+      c.fillRect(15, 4, 1, 1);
+    });
+
+    // ---- Archer / Wooden Bow (16x24) — red-hooded bowman ----
+    spriteImages["wooden_bow"] = makeSprite(16, 24, function(c) {
+      c.fillStyle = "#bbbbaa";
+      c.fillRect(5, 8, 6, 8);
+      c.fillStyle = "#cc3333";
+      c.fillRect(6, 2, 5, 5);
+      c.fillStyle = "#aa2222";
+      c.fillRect(6, 2, 5, 2);
+      c.fillStyle = "#c9a07a";
+      c.fillRect(7, 4, 3, 3);
+      c.fillStyle = "#bbbbaa";
+      c.fillRect(2, 9, 3, 2);
+      c.fillRect(11, 9, 3, 2);
+      c.fillStyle = "#6a4a2a";
+      c.fillRect(1, 5, 1, 10);
+      c.fillRect(0, 6, 1, 2);
+      c.fillRect(0, 13, 1, 2);
+      c.fillStyle = "#aaaaaa";
+      c.fillRect(2, 7, 1, 6);
+      c.fillRect(1, 5, 1, 1);
+      c.fillRect(1, 14, 1, 1);
+      c.fillStyle = "#6a4a2a";
+      c.fillRect(2, 10, 10, 1);
+      c.fillStyle = "#888888";
+      c.fillRect(1, 9, 2, 3);
+      c.fillStyle = "#7a6a5a";
+      c.fillRect(6, 16, 2, 5);
+      c.fillRect(9, 16, 2, 5);
+      c.fillStyle = "#5a3a2a";
+      c.fillRect(5, 20, 3, 4);
+      c.fillRect(9, 20, 3, 4);
+      c.fillStyle = "#cc3333";
+      c.fillRect(5, 7, 2, 3);
+    });
+
+    // ---- Bundle of Arrows (14x8) ----
+    spriteImages["bundle_of_arrows"] = makeSprite(14, 8, function(c) {
+      c.fillStyle = "#6a4a2a";
+      c.fillRect(1, 3, 10, 1);
+      c.fillRect(1, 4, 10, 1);
+      c.fillStyle = "#888888";
+      c.fillRect(11, 2, 2, 1);
+      c.fillRect(12, 3, 2, 1);
+      c.fillRect(11, 4, 2, 1);
+      c.fillStyle = "#aaaaaa";
+      c.fillRect(11, 3, 1, 1);
+      c.fillStyle = "#cc4444";
+      c.fillRect(0, 2, 2, 1);
+      c.fillRect(0, 5, 2, 1);
+      c.fillStyle = "#ffffff";
+      c.fillRect(0, 3, 1, 2);
+    });
+
+    // ---- Gold Coin (12x12) ----
+    spriteImages["gold_coin"] = makeSprite(12, 12, function(c) {
+      c.fillStyle = "#aa8822";
+      c.beginPath(); c.arc(6, 6, 5, 0, Math.PI*2); c.fill();
+      c.fillStyle = "#ddaa22";
+      c.beginPath(); c.arc(6, 6, 4, 0, Math.PI*2); c.fill();
+      c.fillStyle = "#ffdd44";
+      c.beginPath(); c.arc(5, 5, 2.5, 0, Math.PI*2); c.fill();
+      c.fillStyle = "#aa8822";
+      c.fillRect(5, 3, 2, 5);
+      c.fillRect(4, 5, 4, 1);
+    });
+
+    // ---- Treasure Chest (16x14) ----
+    spriteImages["treasure_chest"] = makeSprite(16, 14, function(c) {
+      c.fillStyle = "#5a3a1a";
+      c.fillRect(1, 5, 14, 9);
+      c.fillStyle = "#6a4a2a";
+      c.fillRect(1, 3, 14, 4);
+      c.fillStyle = "#7a5a3a";
+      c.fillRect(2, 3, 12, 2);
+      c.fillStyle = "#888855";
+      c.fillRect(0, 5, 16, 1);
+      c.fillRect(0, 9, 16, 1);
+      c.fillRect(7, 3, 2, 11);
+      c.fillStyle = "#ccaa44";
+      c.fillRect(6, 6, 4, 3);
+      c.fillStyle = "#aa8822";
+      c.fillRect(7, 7, 2, 1);
+      c.fillStyle = "#888855";
+      c.fillRect(1, 4, 1, 1); c.fillRect(14, 4, 1, 1);
+      c.fillRect(1, 12, 1, 1); c.fillRect(14, 12, 1, 1);
+    });
+
+    // ---- Dragon Banner (12x18) ----
+    spriteImages["dragon_banner"] = makeSprite(12, 18, function(c) {
+      c.fillStyle = "#5a3a1a";
+      c.fillRect(1, 0, 2, 18);
+      c.fillStyle = "#6a4a2a";
+      c.fillRect(2, 0, 1, 18);
+      c.fillStyle = "#ccaa44";
+      c.fillRect(1, 0, 2, 2);
+      c.fillStyle = "#aa2222";
+      c.fillRect(3, 1, 8, 11);
+      c.fillStyle = "#cc3333";
+      c.fillRect(4, 2, 6, 9);
+      c.fillStyle = "#aa2222";
+      c.beginPath();
+      c.moveTo(3, 12); c.lineTo(11, 12); c.lineTo(7, 16);
+      c.fill();
+      c.fillStyle = "#ddaa22";
+      c.fillRect(6, 4, 2, 4);
+      c.fillRect(5, 3, 1, 2);
+      c.fillRect(8, 3, 1, 2);
+      c.fillRect(6, 3, 2, 1);
+      c.fillRect(5, 8, 1, 1);
+    });
+
+    // ---- Catapult (30x24) — wooden siege trebuchet ----
+    spriteImages["catapult"] = makeSprite(30, 24, function(c) {
+      // Wheels
+      c.fillStyle = "#3a2a1a";
+      c.beginPath(); c.arc(6, 20, 3.5, 0, Math.PI*2); c.fill();
+      c.beginPath(); c.arc(24, 20, 3.5, 0, Math.PI*2); c.fill();
+      c.fillStyle = "#2a1a0a";
+      c.beginPath(); c.arc(6, 20, 1.5, 0, Math.PI*2); c.fill();
+      c.beginPath(); c.arc(24, 20, 1.5, 0, Math.PI*2); c.fill();
+      c.fillStyle = "#4a3a2a";
+      c.fillRect(4, 20, 5, 1); c.fillRect(6, 18, 1, 5);
+      c.fillRect(22, 20, 5, 1); c.fillRect(24, 18, 1, 5);
+      // Base frame
+      c.fillStyle = "#5a3a1a";
+      c.fillRect(3, 15, 24, 3);
+      c.fillStyle = "#4a2a10";
+      c.fillRect(3, 16, 24, 1);
+      // A-frame supports
+      c.fillStyle = "#5a3a1a";
+      c.fillRect(10, 4, 3, 13);
+      c.fillRect(18, 4, 3, 13);
+      // Cross beam
+      c.fillStyle = "#6a4a2a";
+      c.fillRect(10, 4, 11, 2);
+      // Throwing arm (diagonal)
+      c.save();
+      c.translate(15, 6);
+      c.rotate(-0.4);
+      c.fillStyle = "#6a4a2a";
+      c.fillRect(-14, -1, 26, 2);
+      c.fillStyle = "#7a5a3a";
+      c.fillRect(-14, -1, 26, 1);
+      c.restore();
+      // Pivot bolt
+      c.fillStyle = "#777777";
+      c.fillRect(14, 4, 2, 3);
+      c.fillStyle = "#999999";
+      c.fillRect(14, 5, 2, 1);
+      // Sling bucket
+      c.fillStyle = "#4a3a2a";
+      c.fillRect(0, 4, 4, 3);
+      c.fillStyle = "#3a2a1a";
+      c.fillRect(0, 6, 5, 3);
+      c.fillRect(1, 8, 3, 2);
+      // Counterweight
+      c.fillStyle = "#555555";
+      c.fillRect(25, 1, 5, 5);
+      c.fillStyle = "#444444";
+      c.fillRect(26, 2, 3, 3);
+      c.fillStyle = "#666666";
+      c.fillRect(25, 1, 5, 1);
+      // Rope details
+      c.fillStyle = "#8a7a5a";
+      c.fillRect(2, 9, 1, 5);
+      c.fillRect(3, 13, 7, 1);
+      // Metal fittings
+      c.fillStyle = "#777777";
+      c.fillRect(10, 4, 1, 1); c.fillRect(20, 4, 1, 1);
+      c.fillRect(3, 15, 1, 1); c.fillRect(26, 15, 1, 1);
+    });
+
+    // ---- Frame / Shop Card (64x26) — ornate border ----
+    // ---- Hero (32x32) — armored knight warrior ----
+    spriteImages["hero"] = makeSprite(32, 32, function(c) {
+      // Boots
+      c.fillStyle = "#4a3020"; c.fillRect(10, 26, 5, 4); c.fillRect(17, 26, 5, 4);
+      // Legs — chainmail
+      c.fillStyle = "#6a6a7a"; c.fillRect(11, 20, 4, 7); c.fillRect(17, 20, 4, 7);
+      // Body — plate armor
+      c.fillStyle = "#8899aa"; c.fillRect(9, 10, 14, 11);
+      c.fillStyle = "#99aabb"; c.fillRect(10, 11, 12, 9);
+      // Belt
+      c.fillStyle = "#6a5030"; c.fillRect(9, 19, 14, 2);
+      c.fillStyle = "#ccaa44"; c.fillRect(14, 19, 4, 2);
+      // Arms
+      c.fillStyle = "#7788aa"; c.fillRect(6, 11, 4, 8); c.fillRect(22, 11, 4, 8);
+      // Gauntlets
+      c.fillStyle = "#667788"; c.fillRect(6, 18, 4, 3); c.fillRect(22, 18, 4, 3);
+      // Sword (right hand)
+      c.fillStyle = "#ccccdd"; c.fillRect(24, 6, 2, 14);
+      c.fillStyle = "#eeeeff"; c.fillRect(24, 4, 2, 4);
+      c.fillStyle = "#8a6a30"; c.fillRect(22, 18, 6, 2);
+      // Shield (left hand)
+      c.fillStyle = "#3a5a8a"; c.fillRect(2, 12, 6, 8);
+      c.fillStyle = "#4a6a9a"; c.fillRect(3, 13, 4, 6);
+      c.fillStyle = "#ccaa44"; c.fillRect(4, 15, 2, 2);
+      // Head
+      c.fillStyle = "#ddbbaa"; c.fillRect(12, 4, 8, 7);
+      // Helmet
+      c.fillStyle = "#8899aa"; c.fillRect(11, 2, 10, 5);
+      c.fillStyle = "#99aabb"; c.fillRect(12, 1, 8, 3);
+      // Helmet visor
+      c.fillStyle = "#334455"; c.fillRect(13, 5, 6, 2);
+      // Eyes through visor
+      c.fillStyle = "#eeeeff"; c.fillRect(14, 5, 2, 1); c.fillRect(18, 5, 2, 1);
+      // Plume
+      c.fillStyle = "#cc3333"; c.fillRect(14, 0, 4, 2);
+      c.fillStyle = "#ee4444"; c.fillRect(15, 0, 2, 1);
+      // Cape
+      c.fillStyle = "#882222"; c.fillRect(12, 10, 8, 2);
+    });
+
+    // ---- House (24x24) — small medieval cottage ----
+    spriteImages["house"] = makeSprite(24, 24, function(c) {
+      // Wall
+      c.fillStyle = "#8a7a60"; c.fillRect(4, 10, 16, 14);
+      c.fillStyle = "#9a8a70"; c.fillRect(5, 11, 14, 12);
+      // Roof
+      c.fillStyle = "#6a3020"; c.fillRect(2, 7, 20, 4);
+      c.fillStyle = "#7a4030";
+      c.beginPath(); c.moveTo(0, 11); c.lineTo(12, 3); c.lineTo(24, 11); c.fill();
+      // Door
+      c.fillStyle = "#5a4030"; c.fillRect(10, 16, 5, 8);
+      c.fillStyle = "#ccaa44"; c.fillRect(13, 19, 1, 1);
+      // Window
+      c.fillStyle = "#4a6a8a"; c.fillRect(6, 14, 3, 3);
+      c.fillStyle = "#6a8aaa"; c.fillRect(7, 14, 1, 2);
+      // Window right
+      c.fillStyle = "#4a6a8a"; c.fillRect(16, 14, 3, 3);
+      c.fillStyle = "#6a8aaa"; c.fillRect(17, 14, 1, 2);
+    });
+
+    // ---- Slash effect (16x16) ----
+    spriteImages["slash"] = makeSprite(16, 16, function(c) {
+      c.strokeStyle = "#ffffff"; c.lineWidth = 2;
+      c.beginPath(); c.arc(8, 8, 6, -0.8, 0.8); c.stroke();
+      c.strokeStyle = "#ffcc44"; c.lineWidth = 1;
+      c.beginPath(); c.arc(8, 8, 5, -0.6, 0.6); c.stroke();
+    });
+
+    spriteImages["frame"] = makeSprite(64, 26, function(c, w, h) {
+      c.fillStyle = "rgba(20,20,35,0.95)";
+      c.fillRect(0, 0, w, h);
+      c.strokeStyle = "#6a5a3a";
+      c.lineWidth = 2;
+      c.strokeRect(1, 1, w-2, h-2);
+      c.strokeStyle = "#4a3a2a";
+      c.lineWidth = 1;
+      c.strokeRect(3, 3, w-6, h-6);
+      c.fillStyle = "#8a6a3a";
+      c.fillRect(0, 0, 4, 4); c.fillRect(w-4, 0, 4, 4);
+      c.fillRect(0, h-4, 4, 4); c.fillRect(w-4, h-4, 4, 4);
+      c.fillStyle = "#6a5a3a";
+      c.fillRect(1, 1, 2, 2); c.fillRect(w-3, 1, 2, 2);
+      c.fillRect(1, h-3, 2, 2); c.fillRect(w-3, h-3, 2, 2);
+    });
+  }
+
+  // --- Bootstrap (deferred so the game script block can define init/update/draw) ---
+  resize();
+  generateSprites();
+
+  var _prevDown = false;
+  function loop() {
+    _mpressed = _mdown && !_prevDown;
+    _prevDown = _mdown;
+    if (typeof update === "function") update();
+    if (typeof draw === "function") draw();
+    requestAnimationFrame(loop);
+  }
+
+  window.addEventListener("DOMContentLoaded", function () {
+    if (typeof init === "function") init();
+    requestAnimationFrame(loop);
+  });
+})();
+</script>
+
+<script>
+// ============================================================
+// MIXCLOUD QUEST — Beat-driven idle hero game (landscape strip)
+// ============================================================
+
+// ---------- GLOBAL DECLARATIONS ----------
+var sprites, GROUND_Y, HUD_Y, HUD_H, WORLD_FLOOR, WORLD_CEIL;
+var cam, hero, town;
+var gold, totalKills, totalGold, wave;
+var enemies, enemyIdCounter, slashFX, coinPopups;
+var townArrows, townRocks;
+var music;
+var shop, heroShopItems, townShopItems;
+var time, stars, grassTufts;
+var ui, titleDone, layoutReady;
+var mountainLayers;
+
+init = function() {
+
+  sprites = {
+    goblin:         "goblin",
+    hero:           "hero",
+    slash:          "slash",
+    gold_coin:      "gold_coin",
+    campfire:       "campfire",
+    frame:          "frame",
+    castle_gate:    "castle_gate",
+    mystic_tower:   "mystic_tower",
+    dragon_banner:  "dragon_banner",
+    treasure_chest: "treasure_chest",
+    house:          "house"
+  };
+
+  GROUND_Y    = -50;
+  HUD_Y       = 85;
+  HUD_H       = 28;
+  WORLD_FLOOR = -50;
+  WORLD_CEIL  = 50;
+
+  cam = { x: 0, targetX: 0, shake: 0 };
+
+  hero = {
+    x: -80, y: GROUND_Y + 10,
+    hp: 200, maxHp: 200,
+    damage: 25, attackSpeed: 0.8, attackRange: 22, aoeRange: 12,
+    attackTimer: 0, attacking: false, attackAnim: 0,
+    facing: 1,
+    lifesteal: 0, critChance: 0.1,
+    swordLevel: 0, armourLevel: 0, shieldLevel: 0,
+    level: 1, xp: 0, xpToNext: 20
+  };
+
+  town = {
+    incomeRate: 5,     // gold per minute base
+    incomeTimer: 0,
+    archers: 0,
+    catapults: 0,
+    wallLevel: 0,
+    expansion: 0,
+    archerTimer: 0,
+    catapultTimer: 0
+  };
+
+  gold = 50;
+  totalKills = 0;
+  totalGold = 50;
+  wave = 0;
+
+  enemies = [];
+  enemyIdCounter = 0;
+  slashFX = [];
+  coinPopups = [];
+  townArrows = [];
+  townRocks = [];
+
+  music = {
+    playing: false,
+    bpm: 120,
+    beatTimer: 0,
+    beatInterval: 0.5,
+    totalBeats: 0,
+    beatFlash: 0,
+    intensity: 1
+  };
+
+  shop = { open: false, tab: "hero" };
+
+  heroShopItems = [
+    { id: "sword",   name: "Bigger Sword", cost: 25,  desc: "+8 damage",         maxLevel: 15 },
+    { id: "armour",  name: "Better Armour", cost: 20, desc: "+30 max health",     maxLevel: 15 },
+    { id: "shield",  name: "Better Shield", cost: 20, desc: "+20 max health",     maxLevel: 15 }
+  ];
+
+  townShopItems = [
+    { id: "catapult",  name: "Catapult",      cost: 60,  desc: "AoE boulder launcher",    maxLevel: 3 },
+    { id: "archer",    name: "Archer",        cost: 30,  desc: "Auto-fires arrows",       maxLevel: 5 },
+    { id: "walls",     name: "Bigger Walls",  cost: 35,  desc: "Taller defenses",         maxLevel: 5 },
+    { id: "expansion", name: "Town Expand",   cost: 80,  desc: "2x passive income",       maxLevel: 5 }
+  ];
+
+  time = 0;
+  stars = [];
+  for (var i = 0; i < 60; i++) {
+    stars.push({
+      x: (Math.random() - 0.5) * 800,
+      y: GROUND_Y + 10 + Math.random() * (100 - GROUND_Y),
+      size: Math.random() * 1.2 + 0.3,
+      twinkle: Math.random() * 6
+    });
+  }
+
+  grassTufts = [];
+  for (var i = 0; i < 60; i++) {
+    grassTufts.push({
+      x: (Math.random() - 0.5) * 800,
+      h: Math.random() * 2 + 0.5
+    });
+  }
+
+  // ---------- LANDSCAPE (parallax mountain layers) ----------
+  mountainLayers = [];
+
+  var farPts = [[-600, GROUND_Y]];
+  var lx = -600;
+  while (lx < 600) {
+    lx += 10 + Math.random() * 20;
+    farPts.push([lx, GROUND_Y + 5 + Math.random() * 15]);
+    lx += 15 + Math.random() * 30;
+    farPts.push([lx, GROUND_Y + 60 + Math.random() * 55]);
+    lx += 15 + Math.random() * 30;
+  }
+  farPts.push([lx, GROUND_Y + 5]);
+  farPts.push([lx + 10, GROUND_Y]);
+  mountainLayers.push({ points: farPts, color: "#2a3545", snowColor: "#7a8a9a", parallax: 0.1, snowLine: GROUND_Y + 85 });
+
+  var midPts = [[-600, GROUND_Y]];
+  lx = -600;
+  while (lx < 600) {
+    lx += 8 + Math.random() * 15;
+    midPts.push([lx, GROUND_Y + 3 + Math.random() * 10]);
+    lx += 10 + Math.random() * 20;
+    midPts.push([lx, GROUND_Y + 25 + Math.random() * 30]);
+    lx += 10 + Math.random() * 20;
+  }
+  midPts.push([lx, GROUND_Y + 3]);
+  midPts.push([lx + 10, GROUND_Y]);
+  mountainLayers.push({ points: midPts, color: "#1a2a1e", snowColor: "#3a4a3a", parallax: 0.3, snowLine: GROUND_Y + 48 });
+
+  var forestPts = [[-600, GROUND_Y]];
+  lx = -600;
+  while (lx < 600) {
+    lx += 3 + Math.random() * 5;
+    forestPts.push([lx, GROUND_Y + 1 + Math.random() * 3]);
+    lx += 2 + Math.random() * 4;
+    forestPts.push([lx, GROUND_Y + 7 + Math.random() * 10]);
+  }
+  forestPts.push([lx, GROUND_Y + 1]);
+  forestPts.push([lx + 5, GROUND_Y]);
+  mountainLayers.push({ points: forestPts, color: "#0a150a", parallax: 0.5 });
+
+  ui = { notification: "", notifyTimer: 0 };
+  titleDone = false;
+  layoutReady = false;
+};
+
+// ============================================================
+// UPDATE
+// ============================================================
+update = function() {
+  var dt = 1 / 60;
+  time += dt;
+
+  if (!layoutReady) { layoutReady = true; }
+
+  if (!titleDone) { handleTitleInput(); return; }
+
+  cam.targetX = hero.x + screen.width * 0.3;
+  cam.x += (cam.targetX - cam.x) * 0.08;
+  if (cam.shake > 0) { cam.shake -= dt * 8; if (cam.shake < 0) cam.shake = 0; }
+
+  if (music.playing) {
+    music.beatInterval = 60 / music.bpm;
+    music.beatTimer += dt;
+    music.intensity = Math.min(3, 1 + music.totalBeats * 0.01);
+    if (music.beatTimer >= music.beatInterval) {
+      music.beatTimer -= music.beatInterval;
+      music.totalBeats += 1;
+      music.beatFlash = 1;
+      onBeat();
+    }
+    music.beatFlash = Math.max(0, music.beatFlash - dt * 5);
+  }
+
+  // Mark which enemies can attack (closest 3 only)
+  var attackers = enemies.filter(function(e) { return !e.dead && Math.abs(e.x - hero.x) <= 12; });
+  attackers.sort(function(a, b) { return Math.abs(a.x - hero.x) - Math.abs(b.x - hero.x); });
+  for (var i = 0; i < enemies.length; i++) enemies[i].canAttack = false;
+  for (var i = 0; i < Math.min(3, attackers.length); i++) attackers[i].canAttack = true;
+
+  // Update enemies
+  for (var i = enemies.length - 1; i >= 0; i--) {
+    updateEnemy(enemies[i], dt);
+    if (enemies[i].dead && enemies[i].deathTimer <= 0) enemies.splice(i, 1);
+  }
+
+  // Hero auto-attack
+  if (music.playing && hero.hp > 0) {
+    hero.attackTimer += dt;
+    var nearest = null; var nearDist = 9999;
+    for (var i = 0; i < enemies.length; i++) {
+      var e = enemies[i];
+      if (e.dead) continue;
+      var d = Math.abs(e.x - hero.x);
+      if (d < nearDist) { nearDist = d; nearest = e; }
+    }
+    if (nearest && nearDist < hero.attackRange + 10 && hero.attackTimer >= hero.attackSpeed) {
+      hero.attackTimer = 0;
+      hero.attacking = true;
+      hero.attackAnim = 0.25;
+      hero.facing = 1;
+
+      // Calculate damage
+      var dmg = hero.damage;
+      var isCrit = Math.random() < hero.critChance;
+      if (isCrit) dmg = Math.floor(dmg * 2);
+
+      // Hit primary target
+      nearest.hp -= dmg;
+      if (nearest.hp <= 0) killEnemy(nearest);
+      slashFX.push({ x: nearest.x, y: nearest.y + 4, life: 0.2, crit: isCrit });
+      cam.shake = Math.max(cam.shake, isCrit ? 0.3 : 0.15);
+
+      // AoE cleave
+      if (hero.aoeRange > 0) {
+        for (var j = 0; j < enemies.length; j++) {
+          var e2 = enemies[j];
+          if (e2 === nearest || e2.dead) continue;
+          if (Math.abs(e2.x - nearest.x) < hero.aoeRange) {
+            var aoeDmg = Math.floor(dmg * 0.5);
+            e2.hp -= aoeDmg;
+            if (e2.hp <= 0) killEnemy(e2);
+          }
+        }
+      }
+
+      // Lifesteal
+      if (hero.lifesteal > 0) {
+        hero.hp = Math.min(hero.maxHp, hero.hp + hero.lifesteal);
+      }
+    }
+    if (hero.attackAnim > 0) hero.attackAnim -= dt;
+  }
+
+  // Slash effects
+  for (var i = slashFX.length - 1; i >= 0; i--) {
+    slashFX[i].life -= dt;
+    if (slashFX[i].life <= 0) slashFX.splice(i, 1);
+  }
+
+  // Town passive income
+  town.incomeTimer += dt;
+  var incomeInterval = 60 / (town.incomeRate * Math.pow(2, town.expansion));
+  if (town.incomeTimer >= incomeInterval) {
+    town.incomeTimer -= incomeInterval;
+    gold += 1; totalGold += 1;
+  }
+
+  // Town archers
+  if (town.archers > 0 && music.playing) {
+    town.archerTimer += dt;
+    var archFireRate = 1.5 / town.archers;
+    if (town.archerTimer >= archFireRate) {
+      var nearE = null; var nearD = 9999;
+      for (var i = 0; i < enemies.length; i++) {
+        var e = enemies[i]; if (e.dead) continue;
+        var d = Math.abs(e.x - hero.x);
+        if (d < nearD && d < 150) { nearD = d; nearE = e; }
+      }
+      if (nearE) {
+        town.archerTimer -= archFireRate;
+        townArrows.push({ x: hero.x - 20, y: GROUND_Y + 20 + town.wallLevel * 3, vx: 70 + Math.random() * 20, vy: 15 + Math.random() * 8, life: 2.5, hit: false });
+      }
+    }
+  }
+
+  // Town catapults
+  if (town.catapults > 0 && music.playing) {
+    town.catapultTimer += dt;
+    var catFireRate = 4 / town.catapults;
+    if (town.catapultTimer >= catFireRate) {
+      var nearE = null; var nearD = 9999;
+      for (var i = 0; i < enemies.length; i++) {
+        var e = enemies[i]; if (e.dead) continue;
+        var d = Math.abs(e.x - hero.x);
+        if (d < nearD && d > 20 && d < 150) { nearD = d; nearE = e; }
+      }
+      if (nearE) {
+        town.catapultTimer -= catFireRate;
+        townRocks.push({ x: hero.x - 15, y: GROUND_Y + 18, vx: 50, vy: 35, life: 4 });
+      }
+    }
+  }
+
+  // Update town arrows
+  for (var i = townArrows.length - 1; i >= 0; i--) {
+    var a = townArrows[i];
+    a.x += a.vx * dt; a.y += a.vy * dt; a.vy -= 80 * dt; a.life -= dt;
+    if (!a.hit) {
+      for (var j = 0; j < enemies.length; j++) {
+        var e = enemies[j];
+        if (!e.dead && Math.abs(a.x - e.x) < 6 && Math.abs(a.y - e.y) < 8) {
+          e.hp -= 15 + town.archers * 3;
+          a.hit = true; a.life = 0;
+          if (e.hp <= 0) killEnemy(e);
+          break;
+        }
+      }
+    }
+    if (a.life <= 0 || a.y < GROUND_Y) townArrows.splice(i, 1);
+  }
+
+  // Update town rocks
+  for (var i = townRocks.length - 1; i >= 0; i--) {
+    var r = townRocks[i];
+    r.x += r.vx * dt; r.y += r.vy * dt; r.vy -= 60 * dt; r.life -= dt;
+    if (r.y < GROUND_Y || r.life <= 0) {
+      for (var j = 0; j < enemies.length; j++) {
+        var e = enemies[j];
+        if (!e.dead && Math.abs(r.x - e.x) < 18) { e.hp -= 30 + town.catapults * 10; if (e.hp <= 0) killEnemy(e); }
+      }
+      townRocks.splice(i, 1);
+    }
+  }
+
+  // Coin popups
+  for (var i = coinPopups.length - 1; i >= 0; i--) {
+    coinPopups[i].y += 15 * dt; coinPopups[i].life -= dt;
+    if (coinPopups[i].life <= 0) coinPopups.splice(i, 1);
+  }
+
+  // Heal when not playing
+  if (!music.playing && hero.hp < hero.maxHp) {
+    hero.hp = Math.min(hero.maxHp, hero.hp + 10 * dt);
+  }
+
+  if (ui.notifyTimer > 0) ui.notifyTimer -= dt;
+
+  handleGameInput();
+};
+
+// ============================================================
+// DRAW
+// ============================================================
+draw = function() {
+  if (!titleDone) { drawTitleScreen(); return; }
+
+  var hw = screen.width / 2;
+  var shakeX = cam.shake > 0 ? (Math.random() - 0.5) * cam.shake * 4 : 0;
+  var shakeY = cam.shake > 0 ? (Math.random() - 0.5) * cam.shake * 2 : 0;
+
+  drawFantasyBackground(hw, shakeX, shakeY, cam.x, music.playing, false);
+
+  if (music.beatFlash > 0) {
+    screen.setAlpha(music.beatFlash * 0.12);
+    screen.fillRect(0, GROUND_Y + shakeY, screen.width + 20, 40, "#ff4444");
+    screen.setAlpha(1);
+  }
+
+  // Draw town behind hero
+  drawTown(shakeX, shakeY);
+
+  // Draw enemies
+  for (var i = 0; i < enemies.length; i++) drawEnemy(enemies[i], shakeX, shakeY);
+
+  // Draw hero
+  drawHero(shakeX, shakeY);
+
+  // Slash effects
+  for (var i = 0; i < slashFX.length; i++) {
+    var s = slashFX[i];
+    var sx = s.x - cam.x + shakeX;
+    screen.setAlpha(s.life / 0.2);
+    var sz = s.crit ? 18 : 12;
+    screen.drawSprite(sprites.slash, sx, s.y + shakeY, sz * hero.facing, sz);
+    screen.setAlpha(1);
+  }
+
+  // Town arrows
+  for (var i = 0; i < townArrows.length; i++) {
+    var a = townArrows[i];
+    var ax = a.x - cam.x + shakeX;
+    screen.fillRect(ax, a.y + shakeY, 4, 1, "#ccaa44");
+    screen.fillRect(ax + 2, a.y + shakeY, 1, 1, "#ffffff");
+  }
+
+  // Town catapult rocks
+  for (var i = 0; i < townRocks.length; i++) {
+    var r = townRocks[i];
+    screen.fillRound(r.x - cam.x + shakeX, r.y + shakeY, 6, 6, 3, "#555555");
+    screen.fillRound(r.x - cam.x + shakeX - 1, r.y + shakeY + 1, 3, 3, 1.5, "#777777");
+  }
+
+  // Coin popups
+  for (var i = 0; i < coinPopups.length; i++) {
+    var c = coinPopups[i];
+    screen.setAlpha(Math.min(1, c.life * 2));
+    screen.drawSprite(sprites.gold_coin, c.x - cam.x + shakeX - 5, c.y + shakeY, 7, 7);
+    screen.drawText("+" + c.amount, c.x - cam.x + shakeX + 4, c.y + shakeY, 6, "#ffdd44");
+    screen.setAlpha(1);
+  }
+
+  drawHUD(hw);
+
+  if (shop.open) drawShop(hw);
+
+  if (ui.notifyTimer > 0) {
+    screen.setAlpha(Math.min(1, ui.notifyTimer));
+    screen.fillRect(0, HUD_Y - 18, screen.width + 20, 14, "rgba(0,0,0,0.8)");
+    screen.drawText(ui.notification, 0, HUD_Y - 18, 10, "#ffcc00");
+    screen.setAlpha(1);
+  }
+
+};
+
+// ============================================================
+// FANTASY BACKGROUND
+// ============================================================
+drawFantasyBackground = function(hw, shakeX, shakeY, camX, isPlaying, isTitleScreen) {
+  // Sky gradient — dark navy fading to moody horizon
+  var topR = isPlaying ? 6 : 10,  topG = isPlaying ? 6 : 12,  topB = isPlaying ? 20 : 22;
+  var botR = isPlaying ? 18 : 22, botG = isPlaying ? 28 : 35, botB = isPlaying ? 45 : 48;
+  for (var i = 0; i < 12; i++) {
+    var t = i / 11;
+    var y = 96 - i * 13;
+    var r = Math.floor(topR + (botR - topR) * t);
+    var g = Math.floor(topG + (botG - topG) * t);
+    var b = Math.floor(topB + (botB - topB) * t);
+    screen.fillRect(0, y + shakeY, screen.width + 40, 15, "rgb(" + r + "," + g + "," + b + ")");
+  }
+
+  // Stars
+  for (var i = 0; i < stars.length; i++) {
+    var s = stars[i];
+    var sx = isTitleScreen ? s.x * 0.3 : s.x - camX + shakeX;
+    var sy = isTitleScreen ? s.y * 0.6 + 20 : s.y + shakeY;
+    if (sx > -hw - 10 && sx < hw + 10) {
+      screen.setAlpha(0.3 + 0.5 * Math.abs(Math.sin(time * 0.5 + s.twinkle)));
+      screen.fillRect(sx, sy, s.size, s.size, "#ffffff");
+    }
+  }
+  screen.setAlpha(1);
+
+  // Moon — crescent
+  screen.fillRound(hw - 40 + shakeX, 65 + shakeY, 12, 12, 6, "#cccc99");
+  var moonBg = isPlaying ? "rgb(6,6,20)" : "rgb(10,12,22)";
+  screen.fillRound(hw - 38 + shakeX, 67 + shakeY, 12, 12, 6, moonBg);
+
+  // Mountain layers with parallax
+  for (var li = 0; li < mountainLayers.length; li++) {
+    var layer = mountainLayers[li];
+    var pts = layer.points;
+    var pFactor = isTitleScreen ? layer.parallax * 0.2 : layer.parallax;
+    var camOff = camX * pFactor;
+    var drawPts = [];
+    for (var pi = 0; pi < pts.length; pi++) {
+      drawPts.push([pts[pi][0] - camOff + shakeX, pts[pi][1] + shakeY]);
+    }
+    screen.fillPoly(drawPts, layer.color);
+
+    // Snow caps on peaks above snowLine
+    if (layer.snowLine) {
+      screen.setAlpha(0.55);
+      for (var pi = 1; pi < pts.length - 1; pi++) {
+        if (pts[pi][1] > layer.snowLine) {
+          var cx = pts[pi][0] - camOff + shakeX;
+          var cy = pts[pi][1] + shakeY;
+          var snowH = Math.min(8, (pts[pi][1] - layer.snowLine) * 0.4);
+          var snowW = snowH * 1.2;
+          screen.fillPoly([[cx, cy], [cx - snowW, cy - snowH], [cx + snowW, cy - snowH]], layer.snowColor);
+        }
+      }
+      screen.setAlpha(1);
+    }
+
+    // Fog wisps between layers
+    if (li < mountainLayers.length - 1) {
+      screen.setAlpha(0.06 + li * 0.02);
+      var fogY = GROUND_Y + 30 - li * 10 + Math.sin(time * 0.2 + li) * 3;
+      screen.fillRect(shakeX, fogY + shakeY, screen.width + 40, 20 - li * 5, "#5a6a7a");
+      screen.setAlpha(1);
+    }
+  }
+
+  // Ground
+  screen.fillRect(shakeX, GROUND_Y - 30 + shakeY, screen.width + 40, 60, "#1a2a1a");
+  screen.fillRect(shakeX, GROUND_Y + 1 + shakeY, screen.width + 40, 2, "#2a3a2a");
+  screen.fillRect(shakeX, GROUND_Y + 2 + shakeY, screen.width + 40, 1, "#243824");
+
+  // Grass tufts (game world only)
+  if (!isTitleScreen) {
+    for (var i = 0; i < grassTufts.length; i++) {
+      var gt = grassTufts[i];
+      var gx = gt.x - camX + shakeX;
+      if (gx > -hw - 10 && gx < hw + 10) {
+        screen.fillRect(gx, GROUND_Y + 2 + gt.h / 2 + shakeY, 1, gt.h, "#2a4a2a");
+      }
+    }
+  }
+};
+
+// ============================================================
+// TITLE SCREEN
+// ============================================================
+drawTitleScreen = function() {
+  var hw = screen.width / 2;
+  drawFantasyBackground(hw, 0, 0, 0, false, true);
+
+  screen.drawText("MIXCLOUD", 0, 35, 22, "#ff6644");
+  screen.drawText("QUEST", 0, 10, 28, "#ffffff");
+  screen.drawText("Fight the horde. Earn gold. Upgrade your hero.", 0, -10, 9, "#888888");
+
+  screen.setAlpha(0.6 + Math.sin(time * 2) * 0.3);
+  screen.drawText("Click here to start", 0, -28, 12, "#aaaaaa");
+  screen.setAlpha(1);
+};
+
+handleTitleInput = function() {
+  if (!mouse.press) return;
+  music.bpm = 120;
+  music.beatInterval = 60 / music.bpm;
+  titleDone = true;
+};
+
+// ============================================================
+// HUD
+// ============================================================
+drawHUD = function(hw) {
+  screen.fillRect(0, HUD_Y, screen.width + 20, HUD_H, "rgba(0,0,0,0.75)");
+
+  // Play/Stop button — far left
+  var playCol = music.playing ? "#ff4444" : "#44cc44";
+  var playX = -hw + 50;
+  screen.fillRound(playX, HUD_Y, 40, 18, 6, playCol);
+  screen.drawText(music.playing ? "STOP" : "PLAY", playX, HUD_Y, 11, "#ffffff");
+
+  // BPM + beat indicator
+  screen.drawText(music.bpm + "bpm", -hw + 105, HUD_Y, 9, "#aaaaaa");
+  if (music.playing) {
+    var bs = 3 + music.beatFlash * 6;
+    screen.fillRound(-hw + 140, HUD_Y, bs, bs, bs / 2, "#ff4444");
+  }
+
+  // Hero HP bar — left-center
+  var hpBarX = -hw + 220;
+  var hpPct = hero.hp / hero.maxHp;
+  screen.drawText("HP", hpBarX - 30, HUD_Y, 8, "#ff6666");
+  screen.fillRect(hpBarX + 20, HUD_Y, 60, 6, "#333333");
+  screen.fillRect(hpBarX + 20 - 30 + hpPct * 30, HUD_Y, hpPct * 60, 6, hpColor(hpPct));
+  screen.drawText(Math.ceil(hero.hp) + "/" + hero.maxHp, hpBarX + 20, HUD_Y - 7, 6, "#cccccc");
+
+  // Wave — center
+  screen.drawText("Wave " + wave, 0, HUD_Y + 3, 12, "#ffffff");
+  if (music.playing) {
+    screen.drawText("Enemies incoming!", 0, HUD_Y - 7, 7, "#ff8888");
+  } else {
+    screen.drawText("Rest - upgrade your hero", 0, HUD_Y - 7, 7, "#88ff88");
+  }
+
+  // Kills + Gold + Income — right side
+  screen.drawText("Kills:" + totalKills, hw - 200, HUD_Y, 9, "#ff8888");
+  screen.drawText("Lv" + hero.level, hw - 145, HUD_Y, 9, "#88ccff");
+  screen.drawSprite(sprites.gold_coin, hw - 105, HUD_Y, 14, 14);
+  screen.drawText(gold, hw - 90, HUD_Y, 11, "#ffdd44");
+  var gpm = Math.round(town.incomeRate * Math.pow(2, town.expansion));
+  screen.drawText(gpm + "g/m", hw - 90, HUD_Y - 8, 5, "#88aa44");
+
+  // Shop button — far right
+  if (!music.playing) {
+    var shopX = hw - 40;
+    screen.fillRound(shopX, HUD_Y, 36, 18, 6, "#ffaa00");
+    screen.drawText("SHOP", shopX, HUD_Y, 11, "#ffffff");
+  }
+};
+
+// ============================================================
+// SHOP
+// ============================================================
+drawShop = function(hw) {
+  screen.setAlpha(0.9);
+  screen.fillRect(0, 0, screen.width + 20, 200, "#000000");
+  screen.setAlpha(1);
+
+  screen.drawText("UPGRADE SHOP", 0, 75, 16, "#ffcc00");
+  screen.drawSprite(sprites.gold_coin, -40, 60, 12, 12);
+  screen.drawText(gold + " gold", -18, 60, 11, "#ffdd44");
+
+  // Tab buttons
+  var heroTabCol = shop.tab == "hero" ? "#ff6644" : "#444444";
+  var townTabCol = shop.tab == "town" ? "#44aaff" : "#444444";
+  screen.fillRound(-70, 44, 60, 14, 5, heroTabCol);
+  screen.drawText("Hero", -70, 44, 10, "#ffffff");
+  screen.fillRound(70, 44, 60, 14, 5, townTabCol);
+  screen.drawText("Town", 70, 44, 10, "#ffffff");
+
+  var items = shop.tab == "hero" ? heroShopItems : townShopItems;
+  var itemSpacing = Math.min(160, (screen.width - 100) / items.length);
+  var startX = -(items.length - 1) * itemSpacing / 2;
+
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    var ix = startX + i * itemSpacing;
+    var iy = 8;
+
+    var currentLevel = getUpgradeLevel(item);
+    var atMax = currentLevel >= item.maxLevel;
+    var cost = getUpgradeCost(item, currentLevel);
+    var canAfford = gold >= cost && !atMax;
+
+    var frameAlpha = atMax ? 0.4 : (canAfford ? 1 : 0.6);
+    screen.setAlpha(frameAlpha);
+    screen.drawSprite(sprites.frame, ix, iy, 100, 40);
+    screen.setAlpha(1);
+
+    screen.drawText(item.name, ix - 12, iy + 8, 9, atMax ? "#666666" : "#ffffff");
+    screen.drawText(item.desc, ix, iy - 2, 5, "#aaaaaa");
+    screen.drawText("Lv" + currentLevel + "/" + item.maxLevel, ix + 34, iy + 8, 7, "#ffdd44");
+
+    if (!atMax) {
+      screen.drawSprite(sprites.gold_coin, ix - 12, iy - 10, 8, 8);
+      screen.drawText(cost + "g", ix + 2, iy - 10, 8, canAfford ? "#ffffff" : "#888888");
+    } else {
+      screen.drawText("MAX", ix, iy - 10, 7, "#444444");
+    }
+  }
+
+  // Stats summary
+  if (shop.tab == "hero") {
+    screen.drawText("DMG:" + hero.damage + "  HP:" + hero.maxHp + "  SPD:" + hero.attackSpeed.toFixed(1) + "s", 0, -30, 7, "#aaaaaa");
+  } else {
+    var gpm = Math.round(town.incomeRate * Math.pow(2, town.expansion));
+    screen.drawText("Income:" + gpm + "g/m  Archers:" + town.archers + "  Catapults:" + town.catapults + "  Walls:Lv" + town.wallLevel, 0, -30, 7, "#aaaaaa");
+  }
+
+  screen.fillRound(0, -52, 50, 16, 6, "#ff5544");
+  screen.drawText("CLOSE", 0, -52, 11, "#ffffff");
+};
+
+getUpgradeLevel = function(item) {
+  if (item.id == "sword") return hero.swordLevel;
+  if (item.id == "armour") return hero.armourLevel;
+  if (item.id == "shield") return hero.shieldLevel;
+  if (item.id == "catapult") return town.catapults;
+  if (item.id == "archer") return town.archers;
+  if (item.id == "walls") return town.wallLevel;
+  if (item.id == "expansion") return town.expansion;
+  return 0;
+};
+
+getUpgradeCost = function(item, level) {
+  return item.cost + level * Math.floor(item.cost * 0.6);
+};
+
+applyUpgrade = function(item) {
+  if (item.id == "sword") { hero.swordLevel += 1; hero.damage += 8; notify("Bigger Sword! DMG:" + hero.damage); }
+  else if (item.id == "armour") { hero.armourLevel += 1; hero.maxHp += 30; hero.hp = hero.maxHp; notify("Better Armour! HP:" + hero.maxHp); }
+  else if (item.id == "shield") { hero.shieldLevel += 1; hero.maxHp += 20; hero.hp = hero.maxHp; notify("Better Shield! HP:" + hero.maxHp); }
+  else if (item.id == "catapult") { town.catapults += 1; notify("Catapult built! (" + town.catapults + ")"); }
+  else if (item.id == "archer") { town.archers += 1; notify("Archer hired! (" + town.archers + ")"); }
+  else if (item.id == "walls") { town.wallLevel += 1; notify("Walls upgraded! Lv" + town.wallLevel); }
+  else if (item.id == "expansion") { town.expansion += 1; var gpm = Math.round(town.incomeRate * Math.pow(2, town.expansion)); notify("Town expanded! Income:" + gpm + "g/m"); }
+};
+
+// ============================================================
+// HERO DRAWING
+// ============================================================
+drawHero = function(shakeX, shakeY) {
+  var hx = hero.x - cam.x + shakeX;
+  var hy = hero.y + shakeY;
+
+  // Shadow
+  screen.setAlpha(0.3);
+  screen.fillRound(hx, GROUND_Y + 2 + shakeY, 10, 3, 1, "#000000");
+  screen.setAlpha(1);
+
+  // Hero sprite with attack animation
+  var bob = Math.sin(time * 3) * 0.5;
+  var atkLean = hero.attackAnim > 0 ? hero.facing * 2 : 0;
+  var sz = 18;
+  screen.drawSprite(sprites.hero, hx + atkLean, hy + bob, hero.facing * sz, sz);
+
+  // XP bar under hero
+  if (hero.xp > 0 || hero.level > 1) {
+    var xpPct = hero.xp / hero.xpToNext;
+    screen.fillRect(hx, hy + 12, 14, 1.5, "#222244");
+    screen.fillRect(hx - 7 + xpPct * 7, hy + 12, xpPct * 14, 1.5, "#6688ff");
+  }
+};
+
+// ============================================================
+// TOWN
+// ============================================================
+drawTown = function(shakeX, shakeY) {
+  var exp = town.expansion;
+  var townX = hero.x - 50 - exp * 12;
+  var tx = townX - cam.x + shakeX;
+  var wh = 26 + town.wallLevel * 5;
+
+  // Defensive wall (right side of town, between town and hero)
+  var wallX = hero.x - 18;
+  var wx = wallX - cam.x + shakeX;
+  screen.drawSprite(sprites.castle_gate, wx, GROUND_Y + wh / 2 + 1 + shakeY, -18, wh);
+
+  // Torch on wall
+  screen.drawSprite(sprites.campfire, wx + 2, GROUND_Y + wh + shakeY, 7, 7);
+
+  // Archers on wall
+  for (var a = 0; a < town.archers; a++) {
+    screen.drawSprite(sprites.house, wx - 4 - a * 5, GROUND_Y + wh + 2 + shakeY, 5, 6);
+  }
+
+  // Catapults behind wall
+  for (var c = 0; c < town.catapults; c++) {
+    screen.drawSprite(sprites.campfire, wx - 16 - c * 12, GROUND_Y + 6 + shakeY, 10, 10);
+  }
+
+  // Main tower
+  screen.drawSprite(sprites.mystic_tower, tx - 5, GROUND_Y + 23 + shakeY, 28, 38);
+  screen.drawSprite(sprites.dragon_banner, tx - 5 + Math.sin(time * 3) * 0.5, GROUND_Y + 44 + shakeY, 8, 10);
+
+  // Base houses
+  screen.drawSprite(sprites.house, tx - 30, GROUND_Y + 10 + shakeY, 16, 16);
+  screen.drawSprite(sprites.house, tx + 12, GROUND_Y + 10 + shakeY, -15, 15);
+
+  // Expansion houses
+  for (var h = 0; h < exp; h++) {
+    screen.drawSprite(sprites.house, tx - 48 - h * 18, GROUND_Y + 9 + shakeY, 14 + h, 14 + h);
+    if (h > 0) screen.drawSprite(sprites.house, tx - 38 - h * 14, GROUND_Y + 7 + shakeY, -12, 12);
+  }
+
+  // Treasure chest near gate
+  screen.drawSprite(sprites.treasure_chest, wx - 10, GROUND_Y + 4 + shakeY, 8, 6);
+
+  // Second wall section (further left)
+  var wall2X = townX - 28 - exp * 6;
+  var w2x = wall2X - cam.x + shakeX;
+  screen.drawSprite(sprites.castle_gate, w2x, GROUND_Y + wh / 2 - 2 + shakeY, -16, wh - 4);
+
+  // Campfire in town square
+  screen.drawSprite(sprites.campfire, tx - 18, GROUND_Y + 5 + shakeY, 8, 8);
+
+  // Town ground path
+  screen.setAlpha(0.2);
+  screen.fillRect(tx - 10, GROUND_Y + 1 + shakeY, 50 + exp * 15, 2, "#6a5a40");
+  screen.setAlpha(1);
+};
+
+// ============================================================
+// ENEMY
+// ============================================================
+spawnEnemy = function(side) {
+  var spawnDist = 120 + Math.random() * 60;
+  var spawnX = hero.x + spawnDist;
+  var hpMult = 1 + wave * 0.15;
+  var spdMult = 1 + wave * 0.03;
+
+  var e = {
+    id: enemyIdCounter++,
+    x: spawnX,
+    y: GROUND_Y + 8 + Math.random() * 2,
+    baseSpeed: (18 + Math.random() * 8) * spdMult,
+    speed: 0,
+    hp: Math.floor((30 + Math.random() * 20) * hpMult),
+    maxHp: Math.floor((30 + Math.random() * 20) * hpMult),
+    side: side,
+    attacking: false, attackTimer: 0,
+    dead: false, deathTimer: 0,
+    frame: Math.random() * 10
+  };
+  e.speed = e.baseSpeed;
+  enemies.push(e);
+};
+
+updateEnemy = function(e, dt) {
+  if (e.dead) { e.deathTimer -= dt; return; }
+  e.frame += dt * 6;
+  var dir = e.x < hero.x ? 1 : -1;
+  var distToHero = Math.abs(e.x - hero.x);
+
+  if (distToHero > 8) {
+    e.x += dir * e.speed * dt;
+    e.attacking = false;
+  } else {
+    e.attacking = true;
+    e.attackTimer += dt;
+    var atkSpeed = e.boss ? 2.0 : 1.5;
+    if (e.canAttack && e.attackTimer >= atkSpeed) {
+      e.attackTimer -= atkSpeed;
+      var dmg = e.boss ? (10 + Math.floor(wave * 1.5)) : (2 + Math.floor(wave * 0.4));
+      hero.hp -= dmg;
+      cam.shake = Math.max(cam.shake, 0.15);
+      if (hero.hp <= 0) {
+        hero.hp = 0;
+        notify("Hero defeated! Stop to heal and upgrade.");
+      }
+    }
+  }
+};
+
+drawEnemy = function(e, shakeX, shakeY) {
+  var hw = screen.width / 2;
+  var gx = e.x - cam.x + shakeX;
+  var gy = e.y + shakeY;
+  var sz = e.boss ? 32 : 14;
+  var barW = e.boss ? 30 : 10;
+  if (gx < -hw - 40 || gx > hw + 40) return;
+
+  if (e.dead) {
+    var dt2 = e.boss ? 1.0 : 0.5;
+    screen.setAlpha(e.deathTimer / dt2);
+    var ds = sz * (e.deathTimer / dt2);
+    screen.drawSprite(sprites.goblin, gx, gy, ds, ds);
+    screen.drawSprite(sprites.gold_coin, gx, gy + 6, e.boss ? 10 : 5, e.boss ? 10 : 5);
+    screen.setAlpha(1);
+    return;
+  }
+
+  var bob = Math.sin(e.frame) * (e.boss ? 1.5 : 1);
+  var facingLeft = e.x > hero.x;
+  var shake = e.attacking ? Math.sin(e.attackTimer * 8) * (e.boss ? 3 : 1.5) : 0;
+
+  // Shadow
+  screen.setAlpha(0.3);
+  screen.fillRound(gx, GROUND_Y + 2 + shakeY, e.boss ? 16 : 7, e.boss ? 4 : 2, 1, "#000000");
+  screen.setAlpha(1);
+
+  // Boss tint
+  if (e.boss) {
+    screen.setAlpha(0.3);
+    screen.fillRound(gx, gy + bob, sz + 4, sz + 4, 4, "#ff2200");
+    screen.setAlpha(1);
+  }
+
+  screen.drawSprite(sprites.goblin, gx + shake, gy + bob, facingLeft ? -sz : sz, sz);
+
+  // Boss label
+  if (e.boss) {
+    screen.drawText("BOSS", gx, gy + sz / 2 + 6 + bob, 7, "#ff4444");
+  }
+
+  // HP bar
+  if (e.hp < e.maxHp) {
+    var hpPct = e.hp / e.maxHp;
+    var barH = e.boss ? 3 : 1.5;
+    screen.fillRect(gx, gy + sz / 2 + 2 + bob, barW, barH, "#333333");
+    screen.fillRect(gx - barW / 2 + hpPct * barW / 2, gy + sz / 2 + 2 + bob, hpPct * barW, barH, e.boss ? "#ff4444" : hpColor(hpPct));
+  }
+};
+
+killEnemy = function(e) {
+  e.dead = true; e.deathTimer = e.boss ? 1.0 : 0.5;
+  var goldDrop = e.boss ? (20 + wave * 2) : (1 + Math.floor(wave * 0.2));
+  gold += goldDrop; totalGold += goldDrop; totalKills += 1;
+  coinPopups.push({ x: e.x, y: e.y + 8, life: e.boss ? 2 : 1, amount: goldDrop });
+  if (e.boss) { cam.shake = Math.max(cam.shake, 1.0); notify("BOSS DEFEATED! +" + goldDrop + " gold!"); }
+
+  // XP gain
+  hero.xp += 1 + Math.floor(wave * 0.3);
+  if (hero.xp >= hero.xpToNext) {
+    hero.xp -= hero.xpToNext;
+    hero.level += 1;
+    hero.xpToNext = Math.floor(hero.xpToNext * 1.4);
+    hero.damage += 2;
+    hero.maxHp += 10;
+    hero.hp = hero.maxHp;
+    notify("Level Up! Lv" + hero.level + " — DMG+" + hero.damage + " HP:" + hero.maxHp);
+  }
+};
+
+spawnBoss = function() {
+  var hpMult = 1 + wave * 0.15;
+  var baseHp = Math.floor((30 + 20) * hpMult);  // avg normal enemy HP
+  var e = {
+    id: enemyIdCounter++,
+    x: hero.x + 160,
+    y: GROUND_Y + 12,
+    baseSpeed: 6 + wave * 0.2,
+    speed: 6 + wave * 0.2,
+    hp: baseHp * 100,
+    maxHp: baseHp * 100,
+    side: "right",
+    attacking: false, attackTimer: 0,
+    dead: false, deathTimer: 1.0,
+    frame: Math.random() * 10,
+    boss: true
+  };
+  enemies.push(e);
+};
+
+// ============================================================
+// BEAT EVENT
+// ============================================================
+onBeat = function() {
+  if (music.totalBeats % 8 == 0) wave += 1;
+  if (music.totalBeats % 10 != 0) { cam.shake = Math.max(cam.shake, 0.1); return; }
+
+  // Boss every 10th wave
+  if (wave > 0 && wave % 10 == 0) {
+    var alreadyHasBoss = false;
+    for (var i = 0; i < enemies.length; i++) { if (enemies[i].boss && !enemies[i].dead) alreadyHasBoss = true; }
+    if (!alreadyHasBoss) {
+      spawnBoss();
+      cam.shake = Math.max(cam.shake, 0.5);
+      notify("BOSS WAVE " + wave + "! Giant enemy approaches!");
+      return;
+    }
+  }
+
+  var spawnCount = 1;
+  if (music.intensity > 1.5) spawnCount = 2;
+  if (music.intensity > 2.5) spawnCount = 3;
+  for (var i = 0; i < spawnCount * 2; i++) {
+    spawnEnemy("right");
+  }
+  cam.shake = Math.max(cam.shake, 0.2);
+};
+
+// ============================================================
+// INPUT
+// ============================================================
+handleGameInput = function() {
+  var hw = screen.width / 2;
+
+  if (!mouse.press) return;
+  var mx = mouse.x;
+  var my = mouse.y;
+
+  if (shop.open) { handleShopInput(mx, my, hw); return; }
+
+  if (hitTest(mx, my, -hw + 50, HUD_Y, 40, 18)) {
+    music.playing = !music.playing;
+    if (music.playing) {
+      music.totalBeats = 0; music.beatTimer = 0; music.intensity = 1;
+      hero.hp = hero.maxHp;
+      notify("Press play on Mixcloud! Enemies incoming...");
+    } else {
+      for (var i = enemies.length - 1; i >= 0; i--) { if (!enemies[i].dead) enemies.splice(i, 1); }
+      notify("Rest time! Open SHOP to upgrade.");
+    }
+    return;
+  }
+
+  if (!music.playing && hitTest(mx, my, hw - 40, HUD_Y, 36, 18)) {
+    shop.open = true;
+    return;
+  }
+};
+
+handleShopInput = function(mx, my, hw) {
+  if (hitTest(mx, my, 0, -52, 50, 16)) { shop.open = false; return; }
+
+  // Tab switching
+  if (hitTest(mx, my, -70, 44, 60, 14)) { shop.tab = "hero"; return; }
+  if (hitTest(mx, my,  70, 44, 60, 14)) { shop.tab = "town"; return; }
+
+  var items = shop.tab == "hero" ? heroShopItems : townShopItems;
+  var itemSpacing = Math.min(160, (screen.width - 100) / items.length);
+  var startX = -(items.length - 1) * itemSpacing / 2;
+
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    var ix = startX + i * itemSpacing;
+    var iy = 8;
+
+    if (hitTest(mx, my, ix, iy, 100, 40)) {
+      var currentLevel = getUpgradeLevel(item);
+      var atMax = currentLevel >= item.maxLevel;
+      var cost = getUpgradeCost(item, currentLevel);
+
+      if (gold >= cost && !atMax) {
+        gold -= cost;
+        applyUpgrade(item);
+      }
+      return;
+    }
+  }
+};
+
+// ============================================================
+// HELPERS
+// ============================================================
+hitTest = function(px, py, bx, by, bw, bh) {
+  return px >= bx - bw / 2 && px <= bx + bw / 2 && py >= by - bh / 2 && py <= by + bh / 2;
+};
+
+hpColor = function(pct) {
+  if (pct > 0.6) return "#44cc44";
+  if (pct > 0.3) return "#ccaa44";
+  return "#cc4444";
+};
+
+notify = function(msg) { ui.notification = msg; ui.notifyTimer = 3; };
+
+hslToHex = function(h, s, l) {
+  h = h % 360; s = s / 100; l = l / 100;
+  var a2 = s * Math.min(l, 1 - l);
+  var f = function(n) {
+    var k = (n + h / 30) % 12;
+    var c2 = l - a2 * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+    var hex = Math.round(255 * c2).toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+  };
+  return "#" + f(0) + f(8) + f(4);
+};
+</script>
+</body>
+</html>
