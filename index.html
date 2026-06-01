@@ -1736,8 +1736,8 @@ drawShop = function(hw) {
   screen.setAlpha(1);
 
   screen.drawText("UPGRADE SHOP", 0, 78, 22, "#ffcc00");
-  screen.drawSprite(sprites.gold_coin, -60, 58, 16, 16);
-  screen.drawText(gold + " gold", -38, 58, 14, "#ffdd44");
+  screen.drawSprite(sprites.gold_coin, -65, 58, 16, 16);
+  screen.drawText(gold + " gold", -20, 58, 14, "#ffdd44");
 
   // Tab buttons
   var heroTabCol = shop.tab == "hero" ? "#ff6644" : "#444444";
@@ -1776,8 +1776,8 @@ drawShop = function(hw) {
 
     // Cost — bottom row
     if (!atMax) {
-      screen.drawSprite(sprites.gold_coin, ix - 18, iy - 14, 9, 9);
-      screen.drawText(cost + "g", ix - 2, iy - 14, 9, canAfford ? "#ffffff" : "#888888");
+      screen.drawSprite(sprites.gold_coin, ix - 22, iy - 14, 9, 9);
+      screen.drawText(cost + "g", ix + 6, iy - 14, 9, canAfford ? "#ffffff" : "#888888");
     } else {
       screen.drawText("MAX", ix, iy - 14, 9, "#444444");
     }
