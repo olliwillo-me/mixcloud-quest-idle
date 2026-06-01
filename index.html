@@ -1945,7 +1945,7 @@ updateEnemy = function(e, dt) {
     var atkSpeed = e.boss ? 2.0 : 1.5;
     if (e.canAttack && e.attackTimer >= atkSpeed) {
       e.attackTimer -= atkSpeed;
-      var dmg = e.boss ? (10 + Math.floor(wave * 1.5)) : (2 + Math.floor(wave * 0.4));
+      var dmg = e.boss ? (5 + Math.floor(wave * 0.75)) : (2 + Math.floor(wave * 0.4));
       hero.hp -= dmg;
       cam.shake = Math.max(cam.shake, 0.15);
       if (hero.hp <= 0) {
@@ -2035,8 +2035,8 @@ spawnBoss = function() {
     y: GROUND_Y + 12,
     baseSpeed: 6 + wave * 0.2,
     speed: 6 + wave * 0.2,
-    hp: baseHp * 100,
-    maxHp: baseHp * 100,
+    hp: baseHp * 50,
+    maxHp: baseHp * 50,
     side: "right",
     attacking: false, attackTimer: 0,
     dead: false, deathTimer: 1.0,
@@ -2054,7 +2054,7 @@ onBeat = function() {
   if (music.totalBeats % 10 != 0) { cam.shake = Math.max(cam.shake, 0.1); return; }
 
   // Boss every 10th wave
-  if (wave > 0 && wave % 10 == 0) {
+  if (wave > 0 && wave % 20 == 0) {
     var alreadyHasBoss = false;
     for (var i = 0; i < enemies.length; i++) { if (enemies[i].boss && !enemies[i].dead) alreadyHasBoss = true; }
     if (!alreadyHasBoss) {
