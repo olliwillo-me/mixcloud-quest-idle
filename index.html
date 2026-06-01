@@ -1708,10 +1708,10 @@ drawHUD = function(hw) {
   // Kills + Gold + Income — right side
   screen.drawText("Kills:" + totalKills, hw - 240, HUD_Y, 12, "#ff8888");
   screen.drawText("Lv" + hero.level, hw - 170, HUD_Y, 12, "#88ccff");
-  screen.drawSprite(sprites.gold_coin, hw - 120, HUD_Y, 18, 18);
-  screen.drawText(gold, hw - 102, HUD_Y, 14, "#ffdd44");
+  screen.drawSprite(sprites.gold_coin, hw - 125, HUD_Y, 18, 18);
+  screen.drawText(gold, hw - 105, HUD_Y, 14, "#ffdd44");
   var gpm = Math.round(town.incomeRate * Math.pow(2, town.expansion));
-  screen.drawText(gpm + "g/m", hw - 102, HUD_Y - 10, 7, "#88aa44");
+  screen.drawText(gpm + "g/m", hw - 105, HUD_Y - 10, 7, "#88aa44");
 
   // Shop button — far right
   if (!music.playing) {
@@ -1730,8 +1730,8 @@ drawShop = function(hw) {
   screen.setAlpha(1);
 
   screen.drawText("UPGRADE SHOP", 0, 78, 22, "#ffcc00");
-  screen.drawSprite(sprites.gold_coin, -50, 58, 16, 16);
-  screen.drawText(gold + " gold", -24, 58, 14, "#ffdd44");
+  screen.drawSprite(sprites.gold_coin, -55, 58, 16, 16);
+  screen.drawText(gold + " gold", -30, 58, 14, "#ffdd44");
 
   // Tab buttons
   var heroTabCol = shop.tab == "hero" ? "#ff6644" : "#444444";
@@ -1742,13 +1742,14 @@ drawShop = function(hw) {
   screen.drawText("Town", 80, 42, 13, "#ffffff");
 
   var items = shop.tab == "hero" ? heroShopItems : townShopItems;
-  var itemSpacing = Math.min(160, (screen.width - 100) / items.length);
+  var fw = 140; var fh = 54;
+  var itemSpacing = Math.min(180, (screen.width - 80) / items.length);
   var startX = -(items.length - 1) * itemSpacing / 2;
 
   for (var i = 0; i < items.length; i++) {
     var item = items[i];
     var ix = startX + i * itemSpacing;
-    var iy = 8;
+    var iy = 6;
 
     var currentLevel = getUpgradeLevel(item);
     var atMax = currentLevel >= item.maxLevel;
@@ -1757,18 +1758,22 @@ drawShop = function(hw) {
 
     var frameAlpha = atMax ? 0.4 : (canAfford ? 1 : 0.6);
     screen.setAlpha(frameAlpha);
-    screen.drawSprite(sprites.frame, ix, iy, 120, 48);
+    screen.drawSprite(sprites.frame, ix, iy, fw, fh);
     screen.setAlpha(1);
 
-    screen.drawText(item.name, ix - 14, iy + 10, 12, atMax ? "#666666" : "#ffffff");
-    screen.drawText(item.desc, ix, iy - 2, 7, "#aaaaaa");
-    screen.drawText("Lv" + currentLevel + "/" + item.maxLevel, ix + 40, iy + 10, 9, "#ffdd44");
+    // Name + level — top row, inset from edges
+    screen.drawText(item.name, ix - 20, iy + 12, 11, atMax ? "#666666" : "#ffffff");
+    screen.drawText("Lv" + currentLevel + "/" + item.maxLevel, ix + 42, iy + 12, 8, "#ffdd44");
 
+    // Description — middle row
+    screen.drawText(item.desc, ix, iy, 6, "#aaaaaa");
+
+    // Cost — bottom row
     if (!atMax) {
-      screen.drawSprite(sprites.gold_coin, ix - 14, iy - 12, 10, 10);
-      screen.drawText(cost + "g", ix + 2, iy - 12, 10, canAfford ? "#ffffff" : "#888888");
+      screen.drawSprite(sprites.gold_coin, ix - 12, iy - 14, 9, 9);
+      screen.drawText(cost + "g", ix + 4, iy - 14, 9, canAfford ? "#ffffff" : "#888888");
     } else {
-      screen.drawText("MAX", ix, iy - 12, 9, "#444444");
+      screen.drawText("MAX", ix, iy - 14, 9, "#444444");
     }
   }
 
@@ -1818,20 +1823,20 @@ drawHero = function(shakeX, shakeY) {
 
   // Shadow
   screen.setAlpha(0.3);
-  screen.fillRound(hx, GROUND_Y + 2 + shakeY, 10, 3, 1, "#000000");
+  screen.fillRound(hx, GROUND_Y + 2 + shakeY, 14, 4, 2, "#000000");
   screen.setAlpha(1);
 
   // Hero sprite with attack animation
-  var bob = Math.sin(time * 3) * 0.5;
-  var atkLean = hero.attackAnim > 0 ? hero.facing * 3 : 0;
-  var sz = 24;
+  var bob = Math.sin(time * 3) * 0.7;
+  var atkLean = hero.attackAnim > 0 ? hero.facing * 4 : 0;
+  var sz = 34;
   screen.drawSprite(sprites.hero, hx + atkLean, hy + bob, hero.facing * sz, sz);
 
   // XP bar under hero
   if (hero.xp > 0 || hero.level > 1) {
     var xpPct = hero.xp / hero.xpToNext;
-    screen.fillRect(hx, hy + 12, 14, 1.5, "#222244");
-    screen.fillRect(hx - 7 + xpPct * 7, hy + 12, xpPct * 14, 1.5, "#6688ff");
+    screen.fillRect(hx, hy + 18, 20, 2.5, "#222244");
+    screen.fillRect(hx - 10 + xpPct * 10, hy + 18, xpPct * 20, 2.5, "#6688ff");
   }
 };
 
@@ -1840,52 +1845,52 @@ drawHero = function(shakeX, shakeY) {
 // ============================================================
 drawTown = function(shakeX, shakeY) {
   var exp = town.expansion;
-  var townX = hero.x - 50 - exp * 12;
+  var townX = hero.x - 70 - exp * 16;
   var tx = townX - cam.x + shakeX;
-  var wh = 26 + town.wallLevel * 5;
+  var wh = 38 + town.wallLevel * 7;
 
   // Defensive wall (right side of town, between town and hero)
-  var wallX = hero.x - 18;
+  var wallX = hero.x - 24;
   var wx = wallX - cam.x + shakeX;
-  screen.drawSprite(sprites.castle_gate, wx, GROUND_Y + wh / 2 + 1 + shakeY, -18, wh);
+  screen.drawSprite(sprites.castle_gate, wx, GROUND_Y + wh / 2 + 1 + shakeY, -26, wh);
 
   // Torch on wall
-  screen.drawSprite(sprites.campfire, wx + 2, GROUND_Y + wh + shakeY, 7, 7);
+  screen.drawSprite(sprites.campfire, wx + 3, GROUND_Y + wh + shakeY, 10, 10);
 
   // Archers on wall
   for (var a = 0; a < town.archers; a++) {
-    screen.drawSprite(sprites.house, wx - 4 - a * 5, GROUND_Y + wh + 2 + shakeY, 5, 6);
+    screen.drawSprite(sprites.house, wx - 6 - a * 7, GROUND_Y + wh + 3 + shakeY, 7, 8);
   }
 
   // Catapults behind wall
   for (var c = 0; c < town.catapults; c++) {
-    screen.drawSprite(sprites.campfire, wx - 16 - c * 12, GROUND_Y + 6 + shakeY, 10, 10);
+    screen.drawSprite(sprites.campfire, wx - 22 - c * 16, GROUND_Y + 8 + shakeY, 14, 14);
   }
 
   // Main tower
-  screen.drawSprite(sprites.mystic_tower, tx - 5, GROUND_Y + 23 + shakeY, 28, 38);
-  screen.drawSprite(sprites.dragon_banner, tx - 5 + Math.sin(time * 3) * 0.5, GROUND_Y + 44 + shakeY, 8, 10);
+  screen.drawSprite(sprites.mystic_tower, tx - 5, GROUND_Y + 32 + shakeY, 40, 54);
+  screen.drawSprite(sprites.dragon_banner, tx - 5 + Math.sin(time * 3) * 0.5, GROUND_Y + 62 + shakeY, 12, 14);
 
   // Base houses
-  screen.drawSprite(sprites.house, tx - 30, GROUND_Y + 10 + shakeY, 16, 16);
-  screen.drawSprite(sprites.house, tx + 12, GROUND_Y + 10 + shakeY, -15, 15);
+  screen.drawSprite(sprites.house, tx - 40, GROUND_Y + 14 + shakeY, 22, 22);
+  screen.drawSprite(sprites.house, tx + 16, GROUND_Y + 14 + shakeY, -21, 21);
 
   // Expansion houses
   for (var h = 0; h < exp; h++) {
-    screen.drawSprite(sprites.house, tx - 48 - h * 18, GROUND_Y + 9 + shakeY, 14 + h, 14 + h);
-    if (h > 0) screen.drawSprite(sprites.house, tx - 38 - h * 14, GROUND_Y + 7 + shakeY, -12, 12);
+    screen.drawSprite(sprites.house, tx - 65 - h * 24, GROUND_Y + 13 + shakeY, 20 + h * 2, 20 + h * 2);
+    if (h > 0) screen.drawSprite(sprites.house, tx - 52 - h * 18, GROUND_Y + 10 + shakeY, -17, 17);
   }
 
   // Treasure chest near gate
-  screen.drawSprite(sprites.treasure_chest, wx - 10, GROUND_Y + 4 + shakeY, 8, 6);
+  screen.drawSprite(sprites.treasure_chest, wx - 14, GROUND_Y + 5 + shakeY, 12, 9);
 
   // Second wall section (further left)
-  var wall2X = townX - 28 - exp * 6;
+  var wall2X = townX - 38 - exp * 8;
   var w2x = wall2X - cam.x + shakeX;
-  screen.drawSprite(sprites.castle_gate, w2x, GROUND_Y + wh / 2 - 2 + shakeY, -16, wh - 4);
+  screen.drawSprite(sprites.castle_gate, w2x, GROUND_Y + wh / 2 - 2 + shakeY, -22, wh - 6);
 
   // Campfire in town square
-  screen.drawSprite(sprites.campfire, tx - 18, GROUND_Y + 5 + shakeY, 8, 8);
+  screen.drawSprite(sprites.campfire, tx - 24, GROUND_Y + 7 + shakeY, 12, 12);
 
   // Town ground path
   screen.setAlpha(0.2);
@@ -1949,8 +1954,8 @@ drawEnemy = function(e, shakeX, shakeY) {
   var hw = screen.width / 2;
   var gx = e.x - cam.x + shakeX;
   var gy = e.y + shakeY;
-  var sz = e.boss ? 42 : 18;
-  var barW = e.boss ? 40 : 14;
+  var sz = e.boss ? 52 : 24;
+  var barW = e.boss ? 48 : 18;
   if (gx < -hw - 40 || gx > hw + 40) return;
 
   if (e.dead) {
@@ -2110,7 +2115,7 @@ handleShopInput = function(mx, my, hw) {
     var ix = startX + i * itemSpacing;
     var iy = 8;
 
-    if (hitTest(mx, my, ix, iy, 120, 48)) {
+    if (hitTest(mx, my, ix, iy, 140, 54)) {
       var currentLevel = getUpgradeLevel(item);
       var atMax = currentLevel >= item.maxLevel;
       var cost = getUpgradeCost(item, currentLevel);
