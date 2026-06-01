@@ -1518,37 +1518,74 @@ draw = function() {
 // ============================================================
 // FANTASY BACKGROUND
 // ============================================================
+// Day/night cycle: 0 = full night, 1 = full day
+// 20 minute total cycle: 10 min night->day, 10 min day->night
+getDayNight = function() {
+  var cycle = 1200; // 20 minutes full cycle
+  var t = (time % cycle) / cycle; // 0..1 over full cycle
+  // Use smooth sine: 0->0.5 = night to day, 0.5->1 = day to night
+  return (Math.sin((t - 0.25) * Math.PI * 2) + 1) / 2; // 0=night, 1=day
+};
+
+lerpColor = function(r1, g1, b1, r2, g2, b2, t) {
+  return "rgb(" + Math.floor(r1 + (r2 - r1) * t) + "," + Math.floor(g1 + (g2 - g1) * t) + "," + Math.floor(b1 + (b2 - b1) * t) + ")";
+};
+
 drawFantasyBackground = function(hw, shakeX, shakeY, camX, isPlaying, isTitleScreen) {
-  // Sky gradient — dark navy fading to moody horizon
-  var topR = isPlaying ? 6 : 10,  topG = isPlaying ? 6 : 12,  topB = isPlaying ? 20 : 22;
-  var botR = isPlaying ? 18 : 22, botG = isPlaying ? 28 : 35, botB = isPlaying ? 45 : 48;
+  var dn = getDayNight(); // 0=night, 1=day
+
+  // Sky gradient — lerp between night and day palettes
+  var nTopR = 6, nTopG = 6, nTopB = 20;     // night top
+  var nBotR = 18, nBotG = 28, nBotB = 45;   // night bottom
+  var dTopR = 80, dTopG = 140, dTopB = 220;  // day top
+  var dBotR = 160, dBotG = 200, dBotB = 240; // day bottom
+
   for (var i = 0; i < 12; i++) {
     var t = i / 11;
     var y = 96 - i * 13;
-    var r = Math.floor(topR + (botR - topR) * t);
-    var g = Math.floor(topG + (botG - topG) * t);
-    var b = Math.floor(topB + (botB - topB) * t);
+    var r = Math.floor((nTopR + (nBotR - nTopR) * t) + ((dTopR + (dBotR - dTopR) * t) - (nTopR + (nBotR - nTopR) * t)) * dn);
+    var g = Math.floor((nTopG + (nBotG - nTopG) * t) + ((dTopG + (dBotG - dTopG) * t) - (nTopG + (nBotG - nTopG) * t)) * dn);
+    var b = Math.floor((nTopB + (nBotB - nTopB) * t) + ((dTopB + (dBotB - dTopB) * t) - (nTopB + (nBotB - nTopB) * t)) * dn);
     screen.fillRect(0, y + shakeY, screen.width + 40, 15, "rgb(" + r + "," + g + "," + b + ")");
   }
 
-  // Stars
-  for (var i = 0; i < stars.length; i++) {
-    var s = stars[i];
-    var sx = isTitleScreen ? s.x * 0.3 : s.x - camX + shakeX;
-    var sy = isTitleScreen ? s.y * 0.6 + 20 : s.y + shakeY;
-    if (sx > -hw - 10 && sx < hw + 10) {
-      screen.setAlpha(0.3 + 0.5 * Math.abs(Math.sin(time * 0.5 + s.twinkle)));
-      screen.fillRect(sx, sy, s.size, s.size, "#ffffff");
+  // Stars — fade out during day
+  var starAlpha = Math.max(0, 1 - dn * 2); // visible below 0.5 day
+  if (starAlpha > 0) {
+    for (var i = 0; i < stars.length; i++) {
+      var s = stars[i];
+      var sx = isTitleScreen ? s.x * 0.3 : s.x - camX + shakeX;
+      var sy = isTitleScreen ? s.y * 0.6 + 20 : s.y + shakeY;
+      if (sx > -hw - 10 && sx < hw + 10) {
+        screen.setAlpha(starAlpha * (0.3 + 0.5 * Math.abs(Math.sin(time * 0.5 + s.twinkle))));
+        screen.fillRect(sx, sy, s.size, s.size, "#ffffff");
+      }
     }
+    screen.setAlpha(1);
   }
-  screen.setAlpha(1);
 
-  // Moon — crescent
-  screen.fillRound(hw - 40 + shakeX, 65 + shakeY, 12, 12, 6, "#cccc99");
-  var moonBg = isPlaying ? "rgb(6,6,20)" : "rgb(10,12,22)";
-  screen.fillRound(hw - 38 + shakeX, 67 + shakeY, 12, 12, 6, moonBg);
+  // Moon — fade out during day
+  if (dn < 0.7) {
+    screen.setAlpha(Math.max(0, 1 - dn * 1.8));
+    screen.fillRound(hw - 40 + shakeX, 65 + shakeY, 12, 12, 6, "#cccc99");
+    screen.fillRound(hw - 38 + shakeX, 67 + shakeY, 12, 12, 6, lerpColor(6, 6, 20, 80, 140, 220, dn));
+    screen.setAlpha(1);
+  }
 
-  // Mountain layers with parallax
+  // Sun — fade in during day
+  if (dn > 0.3) {
+    var sunAlpha = Math.min(1, (dn - 0.3) * 2);
+    var sunY = 65 + (1 - dn) * 20; // rises as dn increases
+    screen.setAlpha(sunAlpha * 0.3);
+    screen.fillRound(-hw + 80 + shakeX, sunY + shakeY, 20, 20, 10, "#ffee88");
+    screen.setAlpha(sunAlpha);
+    screen.fillRound(-hw + 80 + shakeX, sunY + shakeY, 14, 14, 7, "#ffdd44");
+    screen.setAlpha(1);
+  }
+
+  // Mountain layers with parallax — lerp colors
+  var mtnNight = ["#2a3545", "#1a2a1e", "#0a150a"];
+  var mtnDay   = ["#5a7a9a", "#3a6a3a", "#1a3a1a"];
   for (var li = 0; li < mountainLayers.length; li++) {
     var layer = mountainLayers[li];
     var pts = layer.points;
@@ -1558,18 +1595,24 @@ drawFantasyBackground = function(hw, shakeX, shakeY, camX, isPlaying, isTitleScr
     for (var pi = 0; pi < pts.length; pi++) {
       drawPts.push([pts[pi][0] - camOff + shakeX, pts[pi][1] + shakeY]);
     }
-    screen.fillPoly(drawPts, layer.color);
+
+    // Lerp mountain color
+    var nc = mtnNight[li]; var dc = mtnDay[li];
+    var nr = parseInt(nc.substr(1,2),16), ng = parseInt(nc.substr(3,2),16), nb = parseInt(nc.substr(5,2),16);
+    var dr = parseInt(dc.substr(1,2),16), dg = parseInt(dc.substr(3,2),16), db = parseInt(dc.substr(5,2),16);
+    screen.fillPoly(drawPts, lerpColor(nr, ng, nb, dr, dg, db, dn));
 
     // Snow caps on peaks above snowLine
     if (layer.snowLine) {
-      screen.setAlpha(0.55);
+      screen.setAlpha(0.55 + dn * 0.3);
       for (var pi = 1; pi < pts.length - 1; pi++) {
         if (pts[pi][1] > layer.snowLine) {
           var cx = pts[pi][0] - camOff + shakeX;
           var cy = pts[pi][1] + shakeY;
           var snowH = Math.min(8, (pts[pi][1] - layer.snowLine) * 0.4);
           var snowW = snowH * 1.2;
-          screen.fillPoly([[cx, cy], [cx - snowW, cy - snowH], [cx + snowW, cy - snowH]], layer.snowColor);
+          var snowCol = dn > 0.5 ? "#e0e8f0" : layer.snowColor;
+          screen.fillPoly([[cx, cy], [cx - snowW, cy - snowH], [cx + snowW, cy - snowH]], snowCol);
         }
       }
       screen.setAlpha(1);
@@ -1577,25 +1620,28 @@ drawFantasyBackground = function(hw, shakeX, shakeY, camX, isPlaying, isTitleScr
 
     // Fog wisps between layers
     if (li < mountainLayers.length - 1) {
-      screen.setAlpha(0.06 + li * 0.02);
+      screen.setAlpha((0.06 + li * 0.02) * (1 + dn * 0.5));
       var fogY = GROUND_Y + 30 - li * 10 + Math.sin(time * 0.2 + li) * 3;
-      screen.fillRect(shakeX, fogY + shakeY, screen.width + 40, 20 - li * 5, "#5a6a7a");
+      var fogCol = dn > 0.5 ? "#8a9aaa" : "#5a6a7a";
+      screen.fillRect(shakeX, fogY + shakeY, screen.width + 40, 20 - li * 5, fogCol);
       screen.setAlpha(1);
     }
   }
 
-  // Ground
-  screen.fillRect(shakeX, GROUND_Y - 30 + shakeY, screen.width + 40, 60, "#1a2a1a");
-  screen.fillRect(shakeX, GROUND_Y + 1 + shakeY, screen.width + 40, 2, "#2a3a2a");
-  screen.fillRect(shakeX, GROUND_Y + 2 + shakeY, screen.width + 40, 1, "#243824");
+  // Ground — lerp between night and day
+  var grndR = Math.floor(26 + 30 * dn), grndG = Math.floor(42 + 50 * dn), grndB = Math.floor(26 + 20 * dn);
+  screen.fillRect(shakeX, GROUND_Y - 30 + shakeY, screen.width + 40, 60, "rgb(" + grndR + "," + grndG + "," + grndB + ")");
+  screen.fillRect(shakeX, GROUND_Y + 1 + shakeY, screen.width + 40, 2, lerpColor(42, 58, 42, 70, 100, 60, dn));
+  screen.fillRect(shakeX, GROUND_Y + 2 + shakeY, screen.width + 40, 1, lerpColor(36, 56, 36, 60, 90, 50, dn));
 
   // Grass tufts (game world only)
   if (!isTitleScreen) {
+    var grassCol = lerpColor(42, 74, 42, 60, 120, 50, dn);
     for (var i = 0; i < grassTufts.length; i++) {
       var gt = grassTufts[i];
       var gx = gt.x - camX + shakeX;
       if (gx > -hw - 10 && gx < hw + 10) {
-        screen.fillRect(gx, GROUND_Y + 2 + gt.h / 2 + shakeY, 1, gt.h, "#2a4a2a");
+        screen.fillRect(gx, GROUND_Y + 2 + gt.h / 2 + shakeY, 1, gt.h, grassCol);
       }
     }
   }
