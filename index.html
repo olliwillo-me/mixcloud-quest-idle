@@ -1315,7 +1315,7 @@ update = function() {
     if (nearest && nearDist < hero.attackRange + 10 && hero.attackTimer >= hero.attackSpeed) {
       hero.attackTimer = 0;
       hero.attacking = true;
-      hero.attackAnim = 0.25;
+      hero.attackAnim = 0.3;
       hero.facing = 1;
 
       // Calculate damage
@@ -1834,9 +1834,44 @@ drawHero = function(shakeX, shakeY) {
 
   // Hero sprite with attack animation
   var bob = Math.sin(time * 3) * 0.7;
-  var atkLean = hero.attackAnim > 0 ? hero.facing * 4 : 0;
   var sz = 34;
+  var atkProg = hero.attackAnim > 0 ? (0.3 - hero.attackAnim) / 0.3 : -1; // 0..1 during swing
+  var atkLean = atkProg >= 0 ? hero.facing * 3 * Math.sin(atkProg * Math.PI) : 0;
+
+  // Draw hero body
   screen.drawSprite(sprites.hero, hx + atkLean, hy + bob, hero.facing * sz, sz);
+
+  // Sword swing arc during attack
+  if (atkProg >= 0) {
+    var swingAngle = -0.8 + atkProg * 2.2; // arc from up to down
+    var swordLen = 16 + hero.swordLevel * 2;
+    var swordBaseX = hx + hero.facing * 10 + atkLean;
+    var swordBaseY = hy + 2 + bob;
+    var swordTipX = swordBaseX + Math.cos(swingAngle) * swordLen * hero.facing;
+    var swordTipY = swordBaseY - Math.sin(swingAngle) * swordLen;
+
+    // Sword blade
+    screen.fillRect((swordBaseX + swordTipX) / 2, (swordBaseY + swordTipY) / 2,
+      Math.abs(swordTipX - swordBaseX) + 2, 2, "#ddddef");
+    // Sword tip glow
+    screen.setAlpha(0.8);
+    screen.fillRound(swordTipX, swordTipY, 3, 3, 1.5, "#ffffff");
+    screen.setAlpha(1);
+
+    // Slash trail arc
+    if (atkProg > 0.2 && atkProg < 0.9) {
+      screen.setAlpha((1 - atkProg) * 0.7);
+      var arcR = swordLen + 2;
+      for (var a = 0; a < 5; a++) {
+        var trailAngle = swingAngle - a * 0.15;
+        var trailX = swordBaseX + Math.cos(trailAngle) * arcR * hero.facing;
+        var trailY = swordBaseY - Math.sin(trailAngle) * arcR;
+        var trailSz = 2 - a * 0.3;
+        screen.fillRound(trailX, trailY, trailSz, trailSz, trailSz / 2, a < 2 ? "#ffffff" : "#ffcc44");
+      }
+      screen.setAlpha(1);
+    }
+  }
 
   // XP bar under hero
   if (hero.xp > 0 || hero.level > 1) {
