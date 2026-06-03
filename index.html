@@ -237,6 +237,12 @@ canvas {
 .mc-player-icons { display: flex; gap: 16px; align-items: center; }
 .mc-player-icons span { color: #888; font-size: 18px; cursor: pointer; }
 .mc-player-icons span:hover { color: #fff; }
+/* ── Mixcloud Widget ── */
+.mc-widget-wrap {
+  max-width: 1100px; margin: 0 auto; padding: 0;
+}
+.mc-widget-wrap iframe { display: block; border: none; }
+
 /* ── Quest CTA Button ── */
 .mc-quest-btn {
   background: linear-gradient(135deg, #7b68ee, #e040fb); border: none; border-radius: 22px;
@@ -288,74 +294,11 @@ body.game-active .mc-page { flex: 1; }
   </div>
 </nav>
 
-<!-- ── Dark Show Header ── -->
-<div class="mc-header-bg">
-  <div class="mc-show-header">
-    <div class="mc-play-btn">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><polygon points="6,3 20,12 6,21"/></svg>
-    </div>
-    <div class="mc-show-info">
-      <div class="mc-show-title">Ghostmic &#8211; Ghostie's Late Night LoFi #1</div>
-      <div class="mc-show-meta">
-        <span>&#9654; 10,159 mins played</span>
-        <span class="sep">&bull;</span>
-        <span>&#9829; 15 favorites</span>
-        <span class="sep">&bull;</span>
-        <span>&#8634; 1 repost</span>
-        <span class="sep">&bull;</span>
-        <span>3 years ago</span>
-        <span class="stat-muted">&nbsp;&nbsp;[0.75]&nbsp;&bull;&nbsp;321&nbsp;&bull;&nbsp;10k</span>
-      </div>
-    </div>
-    <div class="mc-show-art">
-      <div class="art-ghost"><div class="ghost-inner"></div></div>
-    </div>
-  </div>
-
-  <!-- ── Action Buttons ── -->
-  <div class="mc-actions-row">
-    <div class="mc-actions">
-      <button class="mc-action-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        Favorite
-      </button>
-      <button class="mc-action-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/></svg>
-        Repost
-      </button>
-      <button class="mc-action-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-        Share
-      </button>
-      <button class="mc-action-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-        Add to
-      </button>
-      <button class="mc-action-btn mc-more">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
-      </button>
-    </div>
-  </div>
-
-  <!-- ── Waveform ── -->
-  <div class="mc-waveform-section">
-    <div class="mc-waveform">
-      <div class="mc-waveform-bar" id="waveformBar"></div>
-      <span class="mc-waveform-time">52:50</span>
-    </div>
-  </div>
-
-  <!-- ── Comment ── -->
-  <div class="mc-comment-section">
-    <div class="mc-comment">
-      <div class="mc-comment-avatar"></div>
-      <input class="mc-comment-input" placeholder="Write a comment" disabled>
-      <div class="mc-comment-icons">
-        <span>&#9786;</span>
-        <span>&#9654;</span>
-      </div>
-    </div>
-  </div>
+<!-- ── Mixcloud Widget (real player) ── -->
+<div class="mc-widget-wrap">
+  <iframe id="mc-widget" width="100%" height="400"
+    src="https://www.mixcloud.com/widget/iframe/?hide_cover=0&light=0&feed=%2Fjmanulim%2Fghostmic-late-night-lofi-1%2F"
+    frameborder="0" allow="autoplay"></iframe>
 </div>
 
 <!-- ── White Content Area ── -->
@@ -405,24 +348,11 @@ body.game-active .mc-page { flex: 1; }
 
 </div><!-- /.mc-page -->
 
-<!-- ── Player Bar ── -->
+<!-- ── Sync Bar ── -->
 <div class="mc-player">
-  <div class="mc-player-progress"></div>
-  <div class="mc-player-play">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><polygon points="6,3 20,12 6,21"/></svg>
-  </div>
-  <div class="mc-player-art"></div>
+  <div class="mc-player-progress" id="mcProgress"></div>
   <div class="mc-player-info">
-    <div class="mc-player-title">Ghostmic Special &#8211; 2024 End Of Year Challenge (30+ Songs in 3 minutes)</div>
-    <div class="mc-player-artist">Ghost Project</div>
-  </div>
-  <div class="mc-player-time">00:12 / 03:31</div>
-  <div class="mc-player-icons">
-    <span>&#9829;</span>
-    <span>&#8682;</span>
-    <span>&#128172;</span>
-    <span>&#128266;</span>
-    <span>&#9776;</span>
+    <div class="mc-player-title" id="mcSyncStatus">&#9876; Game synced to Mixcloud — press play above to start</div>
   </div>
 </div>
 
@@ -433,20 +363,8 @@ body.game-active .mc-page { flex: 1; }
   </div>
 </div>
 
+<script src="//widget.mixcloud.com/media/js/widgetApi.js"></script>
 <script>
-// Generate waveform bars
-(function() {
-  var wf = document.getElementById('waveformBar');
-  var html = '<div class="mc-waveform-visual">';
-  for (var i = 0; i < 250; i++) {
-    var h = 10 + Math.random() * 50;
-    var played = i < 6 ? ' played' : '';
-    html += '<div class="bar' + played + '" style="height:' + h + '%"></div>';
-  }
-  html += '</div>';
-  wf.innerHTML = html;
-})();
-
 // Quest toggle button
 document.getElementById('startQuestBtn').addEventListener('click', function() {
   var gameSection = document.querySelector('.mc-game-section');
@@ -463,6 +381,86 @@ document.getElementById('startQuestBtn').addEventListener('click', function() {
     var page = document.querySelector('.mc-page');
     if (page) page.scrollTop = 0;
   }
+});
+
+// Mixcloud Widget API — sync game to real playback
+window._mcWidgetReady = false;
+window._mcIsPlaying = false;
+
+window.addEventListener('DOMContentLoaded', function() {
+  var iframe = document.getElementById('mc-widget');
+  if (!iframe || typeof Mixcloud === 'undefined') return;
+
+  var widget = Mixcloud.PlayerWidget(iframe);
+  widget.ready.then(function() {
+    window._mcWidgetReady = true;
+    var statusEl = document.getElementById('mcSyncStatus');
+    var progressEl = document.getElementById('mcProgress');
+
+    // Play event — start the game
+    widget.events.play.on(function() {
+      window._mcIsPlaying = true;
+      if (statusEl) statusEl.textContent = '⚔ Game active — enemies synced to music!';
+      // Tell the game to start
+      if (typeof music !== 'undefined' && typeof titleDone !== 'undefined') {
+        if (!titleDone) {
+          music.bpm = 120;
+          music.beatInterval = 60 / music.bpm;
+          titleDone = true;
+        }
+        music.playing = true;
+        music.totalBeats = 0;
+        music.beatTimer = 0;
+        music.intensity = 1;
+        if (typeof hero !== 'undefined') hero.hp = hero.maxHp;
+      }
+      // Auto-open game if not visible
+      var gameSection = document.querySelector('.mc-game-section');
+      if (gameSection && !gameSection.classList.contains('active')) {
+        gameSection.classList.add('active');
+        document.body.classList.add('game-active');
+        var btn = document.getElementById('startQuestBtn');
+        if (btn) btn.innerHTML = '<span class="sword-icon">&#9876;</span> Stop questing';
+        window.dispatchEvent(new Event('resize'));
+      }
+    });
+
+    // Pause event — pause the game
+    widget.events.pause.on(function() {
+      window._mcIsPlaying = false;
+      if (statusEl) statusEl.textContent = '⚔ Music paused — enemies retreating...';
+      if (typeof music !== 'undefined') {
+        music.playing = false;
+        // Clear enemies when paused
+        if (typeof enemies !== 'undefined') {
+          for (var i = enemies.length - 1; i >= 0; i--) {
+            if (!enemies[i].dead) enemies.splice(i, 1);
+          }
+        }
+      }
+    });
+
+    // Ended event
+    widget.events.ended.on(function() {
+      window._mcIsPlaying = false;
+      if (statusEl) statusEl.textContent = '⚔ Show ended — quest complete!';
+      if (typeof music !== 'undefined') music.playing = false;
+    });
+
+    // Progress event — update progress bar and sync intensity
+    widget.events.progress.on(function(position, duration) {
+      if (progressEl && duration > 0) {
+        var pct = (position / duration) * 100;
+        progressEl.style.width = pct + '%';
+      }
+      // Ramp up game intensity based on how far into the show we are
+      if (typeof music !== 'undefined' && duration > 0) {
+        music.intensity = Math.min(3, 1 + (position / duration) * 2);
+      }
+    });
+
+    if (statusEl) statusEl.textContent = '⚔ Game synced to Mixcloud — press play above to start';
+  });
 });
 </script>
 <script>
@@ -1695,17 +1693,14 @@ handleTitleInput = function() {
 drawHUD = function(hw) {
   screen.fillRect(0, HUD_Y, screen.width + 20, HUD_H, "rgba(0,0,0,0.75)");
 
-  // Play/Stop button — far left
-  var playCol = music.playing ? "#ff4444" : "#44cc44";
-  var playX = -hw + 60;
-  screen.fillRound(playX, HUD_Y, 52, 22, 8, playCol);
-  screen.drawText(music.playing ? "STOP" : "PLAY", playX, HUD_Y, 15, "#ffffff");
-
-  // BPM + beat indicator
-  screen.drawText(music.bpm + "bpm", -hw + 125, HUD_Y, 12, "#aaaaaa");
+  // Status indicator — far left
   if (music.playing) {
     var bs = 4 + music.beatFlash * 8;
-    screen.fillRound(-hw + 165, HUD_Y, bs, bs, bs / 2, "#ff4444");
+    screen.fillRound(-hw + 30, HUD_Y, bs, bs, bs / 2, "#ff4444");
+    screen.drawText("LIVE", -hw + 60, HUD_Y, 12, "#ff6644");
+  } else {
+    screen.fillRound(-hw + 30, HUD_Y, 5, 5, 2.5, "#44cc44");
+    screen.drawText("READY", -hw + 65, HUD_Y, 12, "#44cc44");
   }
 
   // Hero HP bar — left-center
@@ -2134,19 +2129,7 @@ handleGameInput = function() {
 
   if (shop.open) { handleShopInput(mx, my, hw); return; }
 
-  if (hitTest(mx, my, -hw + 60, HUD_Y, 52, 22)) {
-    music.playing = !music.playing;
-    if (music.playing) {
-      music.totalBeats = 0; music.beatTimer = 0; music.intensity = 1;
-      hero.hp = hero.maxHp;
-      notify("Press play on Mixcloud! Enemies incoming...");
-    } else {
-      for (var i = enemies.length - 1; i >= 0; i--) { if (!enemies[i].dead) enemies.splice(i, 1); }
-      notify("Rest time! Open SHOP to upgrade.");
-    }
-    return;
-  }
-
+  // Shop button (always available when not playing)
   if (!music.playing && hitTest(mx, my, hw - 50, HUD_Y, 48, 22)) {
     shop.open = true;
     return;
